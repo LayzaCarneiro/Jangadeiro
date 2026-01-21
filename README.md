@@ -1,3 +1,6 @@
+## Folder Structure
+
+```bash
 project-name/
 │
 ├── README.md
@@ -65,3 +68,4 @@ project-name/
     ├── design.md
     ├── algorithms.md
     └── presentation.md
+````
