@@ -82,3 +82,58 @@
 ## testar elipse
     # draw_elipse(tela, 300, 200, 150, 80, (0, 0, 0))
     # flood_fill_iterativo(tela, 300, 200, (0, 150, 255), (0, 0, 0))
+
+
+## testes transformaçoes
+#     poligono = [
+#     (200, 150),
+#     (300, 170),
+#     (320, 240),
+#     (250, 290),
+#     (190, 230)
+# ]
+
+#     cx = sum(p[0] for p in poligono) / len(poligono)
+#     cy = sum(p[1] for p in poligono) / len(poligono)
+
+#     desenhar_poligono(tela, poligono, (150, 150, 150))
+
+#     M = identidade()
+#     p = aplica_transformacao(M, poligono)
+
+#     desenhar_poligono(tela, p, (0, 0, 0))
+
+
+#     M = identidade()
+#     M = multiplica_matrizes(translacao(100, 50), M)
+
+#     p = aplica_transformacao(M, poligono)
+#     desenhar_poligono(tela, p, (255, 0, 0))
+
+#     M = identidade()
+#     M = multiplica_matrizes(escala(2, 2), M)
+
+#     p = aplica_transformacao(M, poligono)
+#     desenhar_poligono(tela, p, (0, 0, 255))
+
+#     M = identidade()
+#     M = multiplica_matrizes(translacao(cx, cy), M)
+#     M = multiplica_matrizes(escala(1.5, 1.5), M)
+#     M = multiplica_matrizes(translacao(-cx, -cy), M)
+
+#     p = aplica_transformacao(M, poligono)
+#     desenhar_poligono(tela, p, (0, 150, 255))
+
+#     M = identidade()
+#     M = multiplica_matrizes(rotacao(math.radians(45)), M)
+
+#     p = aplica_transformacao(M, poligono)
+#     desenhar_poligono(tela, p, (255, 0, 255))
+
+#     M = identidade()
+#     M = multiplica_matrizes(translacao(cx, cy), M)
+#     M = multiplica_matrizes(rotacao(math.radians(45)), M)
+#     M = multiplica_matrizes(translacao(-cx, -cy), M)
+
+#     p = aplica_transformacao(M, poligono)
+#     desenhar_poligono(tela, p, (255, 100, 0))
