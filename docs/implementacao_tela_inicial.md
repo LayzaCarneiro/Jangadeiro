@@ -289,25 +289,46 @@ while True:
 
 ## 6. Integração com main.py
 
-**Fluxo de execução:**
+### 6.1 Fluxo de Navegação Menu → Gameplay (`jangada2.py`)
 
 ```python
+import pygame
+import sys
+from menu import run_menu
+import jangada2
+
+
 def main():
     pygame.init()
-    tela = pygame.display.set_mode((1000, 1000))
-    
+    largura, altura = 1000, 1000
+    tela = pygame.display.set_mode((largura, altura))
+    pygame.display.set_caption("Jangada das Estrelas")
+
     resultado = run_menu(tela)  # Exibe menu, aguarda escolha
-    
+
     if resultado == "sair":
         pygame.quit()
         sys.exit(0)
-    
+
     if resultado == "iniciar":
-        run_gameplay_placeholder(tela)  # Placeholder do jogo
-    
+        # Encerra o contexto atual e delega para o gameplay da jangada
+        pygame.quit()
+        jangada2.main()  # Executa a cena de gameplay definida em jangada2.py
+        return
+
     pygame.quit()
     sys.exit(0)
 ```
+
+### 6.2 Resumo da Navegação
+
+- `main.py` inicializa Pygame e exibe o **menu inicial** (`run_menu`).
+- Botão **“Sair”** ou tecla **ESC** → encerra o programa.
+- Botão **“Iniciar”** → fecha o contexto gráfico atual e chama `jangada2.main()`,
+  que renderiza:
+  - a **jangada animada** e controlável (WASD),
+  - os **peixes animados** com gradiente,
+  - o **sistema de ondas** e **contador de peixes**.
 
 ---
 
