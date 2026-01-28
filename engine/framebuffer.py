@@ -11,4 +11,11 @@ def getPixel(superficie, x, y):
 def clear(superficie):
     for y in range(superficie.get_height()):
         for x in range(superficie.get_width()):
-            superficie.set_at((x, y), (0,0,0))
+            superficie.set_at((x, y), (0, 0, 0))
+
+
+def clear_color(superficie, cor):
+    """Preenche a superfície com a cor dada usando set_at (set_pixel)."""
+    for y in range(superficie.get_height()):
+        for x in range(superficie.get_width()):
+            superficie.set_at((x, y), cor)

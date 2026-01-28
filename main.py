@@ -1,29 +1,30 @@
-import pygame
+import pygame  # type: ignore
 import sys
-import math
-from engine.framebuffer import set_pixel
-from engine.fill.flood_fill import flood_fill_iterativo
-from engine.raster.line import bresenham
-from engine.raster.line import desenhar_poligono
-from engine.raster.circle import draw_circle
-from engine.raster.elipse import draw_elipse
-from engine.geometry.transform import identidade, aplica_transformacao, multiplica_matrizes, translacao, escala, rotacao
+from menu import run_menu
+import jangada2
 
-pygame.init()
-largura, altura = 1000, 1000
-tela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("Main")
 
-rodando = True
+def main():
+    pygame.init()
+    largura, altura = 1000, 1000
+    tela = pygame.display.set_mode((largura, altura))
+    pygame.display.set_caption("Jangada das Estrelas")
 
-while rodando:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            rodando = False
+    resultado = run_menu(tela)
 
-    tela.fill((255, 255, 255))
+    if resultado == "sair":
+        pygame.quit()
+        sys.exit(0)
 
-    pygame.display.flip()
+    if resultado == "iniciar":
+        # Fecha o contexto atual do Pygame e delega para o gameplay da jangada
+        pygame.quit()
+        jangada2.main()
+        return
 
-pygame.quit()
-sys.exit()
+    pygame.quit()
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

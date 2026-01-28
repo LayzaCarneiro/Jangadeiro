@@ -1,3 +1,24 @@
+## Como rodar
+
+1. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   (ou `pip3` / `python -m pip` se preferir)
+
+2. Execute o jogo:
+   ```bash
+   python main.py
+   ```
+   (ou `python3 main.py`)
+
+3. Na tela inicial:
+   - **Iniciar** – inicia o jogo (por enquanto, tela placeholder até ESC ou fechar)
+   - **Sair** – encerra o programa  
+   - **ESC** – também encerra a partir do menu
+
+---
+
 ## Folder Structure
 
 ```bash
