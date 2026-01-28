@@ -21,6 +21,10 @@ FISH_WHITE = (200, 230, 255)  # Branco do peixe
 FISH_OUTLINE = (30, 100, 200) # Contorno do peixe
 WAVE_COLOR = (100, 180, 220)  # Cor das ondas
 DETAIL_COLOR = (60, 40, 30)   # Contorno escuro
+HEART_RED = (220, 50, 60)
+HEART_DARK = (150, 30, 40)
+GAME_OVER_RED = (200, 40, 40)
+WIN_GREEN = (40, 200, 120)
 
 
 def interpolar_cor(cor1, cor2, t):
@@ -206,6 +210,17 @@ def draw_fish_icon(superficie, x, y, tamanho=8):
     desenhar_poligono(superficie, cauda_pontos, FISH_OUTLINE)
 
 
+def draw_heart_icon(superficie, x, y, tamanho=6):
+    for dy in range(tamanho * 2):
+        for dx in range(tamanho * 2):
+            nx = (dx - tamanho) / tamanho
+            ny = (dy - tamanho) / tamanho
+            val = (nx*nx + ny*ny - 1)**3 - nx*nx*ny*ny*ny
+            if val <= 0:
+                cor = HEART_RED if ny < 0 else HEART_DARK
+                set_pixel(superficie, x + dx, y + dy, cor)
+
+
 def draw_simple_text(superficie, texto, x, y, cor):
     """
     Desenha texto simples usando apenas set_pixel.
@@ -377,10 +392,47 @@ def check_collision(raft_x, raft_y, fish_x, fish_y):
                 raft_top > fish_bottom)
 
 
+def draw_obstacle(superficie, x, y, tamanho=14):
+    """
+    Obstáculo simples (rocha) vista de cima
+    """
+    for dy in range(-tamanho, tamanho + 1):
+        for dx in range(-tamanho, tamanho + 1):
+            if dx*dx + dy*dy <= tamanho*tamanho:
+                cor = (80, 80, 90)
+                if dx*dx + dy*dy > (tamanho-2)*(tamanho-2):
+                    cor = (50, 50, 60)  # contorno
+                set_pixel(superficie, x + dx, y + dy, cor)
+
+
+def check_collision_obstacle(raft_x, raft_y, obs_x, obs_y):
+    raft_w = 50
+    raft_h = 85
+
+    obs_r = 14
+
+    raft_left = raft_x
+    raft_right = raft_x + raft_w
+    raft_top = raft_y
+    raft_bottom = raft_y + raft_h
+
+    obs_left = obs_x - obs_r
+    obs_right = obs_x + obs_r
+    obs_top = obs_y - obs_r
+    obs_bottom = obs_y + obs_r
+
+    return not (
+        raft_right < obs_left or
+        raft_left > obs_right or
+        raft_bottom < obs_top or
+        raft_top > obs_bottom
+    )
+
+
 def main():
     pygame.init()
     
-    WIDTH, HEIGHT = 800, 600
+    WIDTH, HEIGHT = 1000, 800
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Jangada das Estrelas - Gameplay")
     
@@ -401,8 +453,26 @@ def main():
     fish_animation_speed = 0.15
     fish_animation_range = 8  # Amplitude da animação (pixels)
     
+    # Obstáculos
+    NUM_OBSTACULOS = 5
+    obstaculos = []
+
+    while len(obstaculos) < NUM_OBSTACULOS:
+        ox = random.randint(60, WIDTH - 60)
+        oy = random.randint(120, HEIGHT - 60)
+
+        # não pode nascer em cima do peixe
+        if abs(ox - fish_x) < 60 and abs(oy - fish_y_base) < 60:
+            continue
+
+        obstaculos.append([ox, oy])
+
+
     # Pontuação
     pontos = 0
+
+    # Vidas
+    vidas = 3
     
     running = True
     frame_count = 0
@@ -445,6 +515,22 @@ def main():
             fish_y = fish_y_base
             fish_animation_offset = 0.0
         
+        for obs in obstaculos[:]:
+            if check_collision_obstacle(raft_x, raft_y, obs[0], obs[1]):
+                vidas -= 1
+                obstaculos.remove(obs)  # remove obstáculo após colisão
+                break
+
+        # Condições de fim de jogo
+        if vidas <= 0:
+            running = False
+            resultado = "GAME OVER"
+
+        elif pontos >= 5:
+            running = False
+            resultado = "VITORIA"
+
+
         # Renderização (tudo via set_pixel)
         # Desenha ondas primeiro (atrás do peixe)
         draw_waves_around_fish(screen, fish_x, fish_y_base, fish_animation_offset)
@@ -452,18 +538,41 @@ def main():
         # Desenha peixe
         draw_fish(screen, fish_x, int(fish_y))
         
+        for obs in obstaculos:
+            draw_obstacle(screen, obs[0], obs[1])
+
+
         # Desenha jangada
         draw_raft(screen, raft_x, raft_y)
         
+        # Vida (1 coração + número)
+        draw_heart_icon(screen, 10, 28, tamanho=5)
+        draw_simple_text(screen, str(vidas), 28, 30, (255, 255, 255))
+
         # Pontuação com ícone de peixe
         # Ícone de peixe
-        draw_fish_icon(screen, 10, 10, tamanho=10)
+        draw_fish_icon(screen, 10, 10, tamanho=10) 
         # Número de pontos
         draw_simple_text(screen, str(pontos), 25, 10, (255, 255, 255))
         
         pygame.display.flip()
         clock.tick(60)
     
+    # Tela final
+    screen.fill(SEA_COLOR)
+
+    if resultado == "GAME OVER":
+        draw_simple_text(screen, "0", WIDTH//2 - 6, HEIGHT//2, GAME_OVER_RED)
+        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, GAME_OVER_RED)
+
+    else:
+        draw_simple_text(screen, "5", WIDTH//2 - 6, HEIGHT//2, WIN_GREEN)
+        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, WIN_GREEN)
+
+    pygame.display.flip()
+    pygame.time.delay(2500)
+
+
     pygame.quit()
     sys.exit()
 

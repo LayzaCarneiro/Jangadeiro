@@ -6,7 +6,7 @@ import jangada2
 
 def main():
     pygame.init()
-    largura, altura = 1000, 1000
+    largura, altura = 1000, 800
     tela = pygame.display.set_mode((largura, altura))
     pygame.display.set_caption("Jangada das Estrelas")
 

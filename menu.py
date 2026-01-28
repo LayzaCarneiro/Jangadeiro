@@ -70,12 +70,12 @@ def draw_title_scene(surf, w, h):
     draw_circle(surf, int(w * 0.85), int(h * 0.15), 50, SUN)
     # Horizonte (reta)
     y_h = int(h * 0.65)
-    bresenham(surf, 0, y_h, w, y_h, SEA)
+    # bresenham(surf, 0, y_h, w, y_h, SEA)
     # Ondas (retas)
-    for i in range(5):
-        y = y_h + 15 + i * 12
-        x0, x1 = 0, w
-        bresenham(surf, x0, y, x1, y, WAVE)
+    # for i in range(5):
+    #     y = y_h + 15 + i * 12
+    #     x0, x1 = 0, w
+    #     bresenham(surf, x0, y, x1, y, WAVE)
 
 
 def draw_button(surf, x, y, larg, alt, texto, cor_fundo, cor_borda, cor_texto):
