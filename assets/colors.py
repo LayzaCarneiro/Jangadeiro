@@ -81,3 +81,22 @@ UI_BUTTON_INACTIVE = (160, 160, 160)
 DEBUG_RED = (255, 0, 0)
 DEBUG_GREEN = (0, 255, 0)
 DEBUG_BLUE = (0, 0, 255)
+
+SEA_COLOR = (0, 120, 170)
+WOOD_DARK = (92, 64, 51)      # Marrom escuro
+WOOD_LIGHT = (181, 136, 99)   # Marrom claro
+FISH_BLUE = (50, 150, 255)    # Azul do peixe
+FISH_WHITE = (200, 230, 255)  # Branco do peixe
+FISH_OUTLINE = (30, 100, 200) # Contorno do peixe
+WAVE_COLOR = (100, 180, 220)  # Cor das ondas
+DETAIL_COLOR = (60, 40, 30)   # Contorno escuro
+HEART_RED = (220, 50, 60)
+HEART_DARK = (150, 30, 40)
+GAME_OVER_RED = (200, 40, 40)
+WIN_GREEN = (40, 200, 120)
+
+SUN = (255, 170, 60)
+CLOUD = (240, 240, 240)
+WOOD = (160, 120, 80)
+SKIN = (230, 200, 170)
+WAVE = (100, 180, 220)
