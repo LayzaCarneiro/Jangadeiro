@@ -1,12 +1,11 @@
 import pygame
 import math
 import assets.colors as color
-from engine.framebuffer import set_pixel
 from engine.raster.line import bresenham, desenhar_poligono
 from engine.raster.circle import draw_circle, get_circle_points
-from engine.raster.elipse import draw_elipse
 from engine.fill.flood_fill import flood_fill_iterativo
 from engine.fill.scanline import scanline_fill
+from engine.geometry.cohen_sutherland import draw_line_clipped
 from app.scenes.menu import run_menu
 
 def draw_sun(tela, largura):
@@ -24,6 +23,7 @@ def draw_waves(tela, largura, altura):
     for y in range(360, altura, 20):
         for x in range(0, largura, 40):
             bresenham(tela, x, y, x + 30, y + 5, color.WAVE)
+
 
 def draw_background(tela, largura, altura):
     # Céu
@@ -47,6 +47,7 @@ def draw_background(tela, largura, altura):
     ]
     scanline_fill(tela, areia, color.SUN_ORANGE)
 
+
 def draw_character_translated(tela, cx, cy, dx, dy):
     x = cx + dx
     y = cy + dy
@@ -66,6 +67,27 @@ def draw_character_translated(tela, cx, cy, dx, dy):
     bresenham(tela, x, y + 40, x - 10, y + 60, color.DETAIL_COLOR)
     bresenham(tela, x, y + 40, x + 10, y + 60, color.DETAIL_COLOR)
 
+
+def draw_character_clipped(tela, cx, cy, dx, dy, viewport):
+    x = cx + dx
+    y = cy + dy
+
+    # Cabeça (continua sem clipping, porque usamos fill)
+    draw_circle(tela, x, y, 12, color.DETAIL_COLOR)
+    flood_fill_iterativo(tela, x, y, color.SKIN, color.DETAIL_COLOR)
+
+    # Corpo
+    draw_line_clipped(tela, x, y + 12, x, y + 40, color.DETAIL_COLOR, viewport)
+
+    # Braços
+    draw_line_clipped(tela, x, y + 20, x - 15, y + 30, color.DETAIL_COLOR, viewport)
+    draw_line_clipped(tela, x, y + 20, x + 15, y + 30, color.DETAIL_COLOR, viewport)
+
+    # Pernas
+    draw_line_clipped(tela, x, y + 40, x - 10, y + 60, color.DETAIL_COLOR, viewport)
+    draw_line_clipped(tela, x, y + 40, x + 10, y + 60, color.DETAIL_COLOR, viewport)
+
+
 def draw_raft_translated(tela, largura, altura, dx):
     base_x = largura // 2 - 60 + dx
     base_y = altura // 2 + 60
@@ -80,6 +102,7 @@ def draw_raft_translated(tela, largura, altura, dx):
     scanline_fill(tela, jangada, color.WOOD)
     desenhar_poligono(tela, jangada, color.DETAIL_COLOR)
 
+
 def run_intro(tela):
     clock = pygame.time.Clock()
     frame = 0
@@ -87,16 +110,22 @@ def run_intro(tela):
     transition = False
     transition_frame = 0
 
-    # posição inicial do jangadeiro (na areia)
-    dx = -200
+    largura, altura = tela.get_size()
+    viewport = (0, 0, largura, altura)  # xmin, ymin, xmax, ymax
+
+    # posição inicial do jangadeiro (fora da tela à esquerda)
+    dx = -330  # começa bem fora
     dy = 120
+
+    # centro da “janela do mundo”
+    cx = largura // 2 - 200
+    cy = altura // 2 + 60
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return "sair"
 
-        largura, altura = tela.get_size()
         tela.fill(color.SKY_DUSK_BLUE)
 
         draw_background(tela, largura, altura)
@@ -124,12 +153,13 @@ def run_intro(tela):
             dy += vel_y
             dy = max(dy, 0)
 
-        draw_character_translated(
+        draw_character_clipped(
             tela,
-            largura // 2 - 200,
-            altura // 2 + 60,
+            cx,
+            cy,
             dx,
-            dy
+            dy,
+            viewport
         )
 
         if transition:
@@ -164,4 +194,3 @@ def run_intro(tela):
         if dx >= 0 and not transition:
             transition = True
             transition_frame = 0
-
