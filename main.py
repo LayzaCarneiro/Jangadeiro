@@ -1,7 +1,7 @@
 import pygame  # type: ignore
 import sys
-from menu import run_menu
-import jangada2
+from app.scenes.menu import run_menu
+import app.scenes.jangada2 as jangada2
 
 
 def main():

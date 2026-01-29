@@ -8,95 +8,11 @@ import pygame
 import sys
 import random
 import math
+import assets.colors as color
 from engine.framebuffer import set_pixel
 from engine.raster.line import bresenham, desenhar_poligono
-from engine.fill.scanline import scanline_fill
-
-# Cores
-SEA_COLOR = (0, 120, 170)
-WOOD_DARK = (92, 64, 51)      # Marrom escuro
-WOOD_LIGHT = (181, 136, 99)   # Marrom claro
-FISH_BLUE = (50, 150, 255)    # Azul do peixe
-FISH_WHITE = (200, 230, 255)  # Branco do peixe
-FISH_OUTLINE = (30, 100, 200) # Contorno do peixe
-WAVE_COLOR = (100, 180, 220)  # Cor das ondas
-DETAIL_COLOR = (60, 40, 30)   # Contorno escuro
-HEART_RED = (220, 50, 60)
-HEART_DARK = (150, 30, 40)
-GAME_OVER_RED = (200, 40, 40)
-WIN_GREEN = (40, 200, 120)
-
-
-def interpolar_cor(cor1, cor2, t):
-    """
-    Interpola linearmente entre duas cores RGB.
-    t: 0.0 = cor1, 1.0 = cor2
-    """
-    r1, g1, b1 = cor1
-    r2, g2, b2 = cor2
-    r = int(r1 + (r2 - r1) * t)
-    g = int(g1 + (g2 - g1) * t)
-    b = int(b1 + (b2 - b1) * t)
-    return (r, g, b)
-
-
-def scanline_fill_gradiente(superficie, pontos, cor_inicio, cor_fim, direcao='vertical'):
-    """
-    Preenche polígono com gradiente linear.
-    direcao: 'vertical' (de cima para baixo) ou 'horizontal' (esquerda para direita)
-    """
-    ys = [p[1] for p in pontos]
-    xs = [p[0] for p in pontos]
-    y_min = min(ys)
-    y_max = max(ys)
-    x_min = min(xs)
-    x_max = max(xs)
-    
-    n = len(pontos)
-    
-    for y in range(y_min, y_max):
-        intersecoes_x = []
-        
-        for i in range(n):
-            x0, y0 = pontos[i]
-            x1, y1 = pontos[(i + 1) % n]
-            
-            if y0 == y1:
-                continue
-            
-            if y0 > y1:
-                x0, y0, x1, y1 = x1, y1, x0, y0
-            
-            if y < y0 or y >= y1:
-                continue
-            
-            x = x0 + (y - y0) * (x1 - x0) / (y1 - y0)
-            intersecoes_x.append(x)
-        
-        intersecoes_x.sort()
-        
-        for i in range(0, len(intersecoes_x), 2):
-            if i + 1 < len(intersecoes_x):
-                x_inicio = int(round(intersecoes_x[i]))
-                x_fim = int(round(intersecoes_x[i + 1]))
-                
-                for x in range(x_inicio, x_fim + 1):
-                    if direcao == 'vertical':
-                        # Gradiente vertical: t baseado em y
-                        if y_max != y_min:
-                            t = (y - y_min) / (y_max - y_min)
-                        else:
-                            t = 0.5
-                    else:
-                        # Gradiente horizontal: t baseado em x
-                        if x_max != x_min:
-                            t = (x - x_min) / (x_max - x_min)
-                        else:
-                            t = 0.5
-                    
-                    cor = interpolar_cor(cor_inicio, cor_fim, t)
-                    set_pixel(superficie, x, y, cor)
-
+from engine.fill.scanline import scanline_fill, scanline_fill_gradiente
+from engine.math.auxiliary import interpolar_cor
 
 def draw_raft(superficie, x, y):
     """
@@ -121,13 +37,13 @@ def draw_raft(superficie, x, y):
     scanline_fill_gradiente(
         superficie, 
         corpo_pontos, 
-        WOOD_DARK, 
-        WOOD_LIGHT, 
+        color.WOOD_DARK, 
+        color.WOOD_LIGHT, 
         direcao='vertical'
     )
     
     # Contorno do corpo
-    desenhar_poligono(superficie, corpo_pontos, DETAIL_COLOR)
+    desenhar_poligono(superficie, corpo_pontos, color.DETAIL_COLOR)
     
     # Proa (triângulo na frente)
     proa_pontos = [
@@ -140,13 +56,13 @@ def draw_raft(superficie, x, y):
     scanline_fill_gradiente(
         superficie,
         proa_pontos,
-        WOOD_DARK,
-        WOOD_LIGHT,
+        color.WOOD_DARK,
+        color.WOOD_LIGHT,
         direcao='vertical'
     )
     
     # Contorno da proa
-    desenhar_poligono(superficie, proa_pontos, DETAIL_COLOR)
+    desenhar_poligono(superficie, proa_pontos, color.DETAIL_COLOR)
     
     # Detalhes: linhas horizontais (tábuas)
     for i in range(3):
@@ -157,7 +73,7 @@ def draw_raft(superficie, x, y):
             y_tabua,
             x + largura_base - 5,
             y_tabua,
-            DETAIL_COLOR
+            color.DETAIL_COLOR
         )
     
     # Detalhe central (mastro ou estrutura)
@@ -169,7 +85,7 @@ def draw_raft(superficie, x, y):
         centro_y - 5,
         centro_x + 3,
         centro_y - 5,
-        DETAIL_COLOR
+        color.DETAIL_COLOR
     )
     bresenham(
         superficie,
@@ -177,7 +93,7 @@ def draw_raft(superficie, x, y):
         centro_y - 5,
         centro_x,
         centro_y + 5,
-        DETAIL_COLOR
+        color.DETAIL_COLOR
     )
 
 
@@ -197,7 +113,7 @@ def draw_fish_icon(superficie, x, y, tamanho=8):
                         t_grad = t * 2
                     else:
                         t_grad = (1 - t) * 2
-                    cor = interpolar_cor(FISH_BLUE, FISH_WHITE, t_grad)
+                    cor = interpolar_cor(color.FISH_BLUE, color.FISH_WHITE, t_grad)
                     set_pixel(superficie, x + dx, y + dy, cor)
     
     # Cauda
@@ -206,8 +122,8 @@ def draw_fish_icon(superficie, x, y, tamanho=8):
         (x - a - 3, y - 2),
         (x - a - 3, y + 2)
     ]
-    scanline_fill(superficie, cauda_pontos, FISH_BLUE)
-    desenhar_poligono(superficie, cauda_pontos, FISH_OUTLINE)
+    scanline_fill(superficie, cauda_pontos, color.FISH_BLUE)
+    desenhar_poligono(superficie, cauda_pontos, color.FISH_OUTLINE)
 
 
 def draw_heart_icon(superficie, x, y, tamanho=6):
@@ -217,7 +133,7 @@ def draw_heart_icon(superficie, x, y, tamanho=6):
             ny = (dy - tamanho) / tamanho
             val = (nx*nx + ny*ny - 1)**3 - nx*nx*ny*ny*ny
             if val <= 0:
-                cor = HEART_RED if ny < 0 else HEART_DARK
+                cor = color.HEART_RED if ny < 0 else color.HEART_DARK
                 set_pixel(superficie, x + dx, y + dy, cor)
 
 
@@ -280,7 +196,7 @@ def draw_fish(superficie, x, y):
                     else:
                         t_grad = (1 - t) * 2  # 1 → 0 (meio → base)
                     
-                    cor = interpolar_cor(FISH_BLUE, FISH_WHITE, t_grad)
+                    cor = interpolar_cor(color.FISH_BLUE, color.FISH_WHITE, t_grad)
                     set_pixel(superficie, corpo_x + dx, corpo_y + dy, cor)
     
     # Contorno do corpo
@@ -292,7 +208,7 @@ def draw_fish(superficie, x, y):
                 dist = (dx * dx) / (a * a) + (dy * dy) / (b * b)
                 # Contorno: pixels na borda da elipse
                 if 0.85 <= dist <= 1.0:
-                    set_pixel(superficie, corpo_x + dx, corpo_y + dy, FISH_OUTLINE)
+                    set_pixel(superficie, corpo_x + dx, corpo_y + dy,color.FISH_OUTLINE)
     
     # Cauda (barbatana traseira)
     cauda_pontos = [
@@ -300,8 +216,8 @@ def draw_fish(superficie, x, y):
         (corpo_x - corpo_largura // 2 - 8, corpo_y - 6),
         (corpo_x - corpo_largura // 2 - 8, corpo_y + 6)
     ]
-    scanline_fill_gradiente(superficie, cauda_pontos, FISH_BLUE, FISH_WHITE, direcao='vertical')
-    desenhar_poligono(superficie, cauda_pontos, FISH_OUTLINE)
+    scanline_fill_gradiente(superficie, cauda_pontos, color.FISH_BLUE, color.FISH_WHITE, direcao='vertical')
+    desenhar_poligono(superficie, cauda_pontos, color.FISH_OUTLINE)
     
     # Barbatana superior
     barbatana_sup_pontos = [
@@ -309,8 +225,8 @@ def draw_fish(superficie, x, y):
         (corpo_x + 8, corpo_y - corpo_altura // 2 - 4),
         (corpo_x + 12, corpo_y - corpo_altura // 2)
     ]
-    scanline_fill_gradiente(superficie, barbatana_sup_pontos, FISH_BLUE, FISH_WHITE, direcao='vertical')
-    desenhar_poligono(superficie, barbatana_sup_pontos, FISH_OUTLINE)
+    scanline_fill_gradiente(superficie, barbatana_sup_pontos, color.FISH_BLUE, color.FISH_WHITE, direcao='vertical')
+    desenhar_poligono(superficie, barbatana_sup_pontos, color.FISH_OUTLINE)
     
     # Barbatana inferior
     barbatana_inf_pontos = [
@@ -318,8 +234,8 @@ def draw_fish(superficie, x, y):
         (corpo_x + 8, corpo_y + corpo_altura // 2 + 4),
         (corpo_x + 12, corpo_y + corpo_altura // 2)
     ]
-    scanline_fill_gradiente(superficie, barbatana_inf_pontos, FISH_BLUE, FISH_WHITE, direcao='vertical')
-    desenhar_poligono(superficie, barbatana_inf_pontos, FISH_OUTLINE)
+    scanline_fill_gradiente(superficie, barbatana_inf_pontos, color.FISH_BLUE, color.FISH_WHITE, direcao='vertical')
+    desenhar_poligono(superficie, barbatana_inf_pontos, color.FISH_OUTLINE)
     
     # Olho
     olho_x = corpo_x + 4
@@ -360,7 +276,7 @@ def draw_waves_around_fish(superficie, x, y, offset_y):
             x1, y1 = pontos_onda[(i + 1) % len(pontos_onda)]
             # Só desenha se estiver dentro da tela
             if 0 <= x0 < superficie.get_width() and 0 <= y0 < superficie.get_height():
-                bresenham(superficie, x0, y0, x1, y1, WAVE_COLOR)
+                bresenham(superficie, x0, y0, x1, y1, color.WAVE_COLOR)
 
 
 def check_collision(raft_x, raft_y, fish_x, fish_y):
@@ -480,7 +396,7 @@ def main():
         frame_count += 1
         
         # Limpa tela (usa fill para performance, mas todo o resto é set_pixel)
-        screen.fill(SEA_COLOR)
+        screen.fill(color.SEA_COLOR)
         
         # Processa eventos
         for event in pygame.event.get():
@@ -559,15 +475,15 @@ def main():
         clock.tick(60)
     
     # Tela final
-    screen.fill(SEA_COLOR)
+    screen.fill(color.SEA_COLOR)
 
     if resultado == "GAME OVER":
-        draw_simple_text(screen, "0", WIDTH//2 - 6, HEIGHT//2, GAME_OVER_RED)
-        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, GAME_OVER_RED)
+        draw_simple_text(screen, "0", WIDTH//2 - 6, HEIGHT//2, color.GAME_OVER_RED)
+        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, color.GAME_OVER_RED)
 
     else:
-        draw_simple_text(screen, "5", WIDTH//2 - 6, HEIGHT//2, WIN_GREEN)
-        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, WIN_GREEN)
+        draw_simple_text(screen, "5", WIDTH//2 - 6, HEIGHT//2, color.WIN_GREEN)
+        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, color.WIN_GREEN)
 
     pygame.display.flip()
     pygame.time.delay(2500)
