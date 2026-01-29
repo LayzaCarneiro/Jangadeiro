@@ -1,7 +1,7 @@
 
 def set_pixel(superficie, x, y, color):
     if 0 <= x < superficie.get_width() and 0 <= y < superficie.get_height():
-        superficie.set_at((x, y), color)
+        superficie.set_at((int(x), int(y)), color)
 
 def getPixel(superficie, x, y):
     if 0 <= x < superficie.get_width() and 0 <= y < superficie.get_height():
