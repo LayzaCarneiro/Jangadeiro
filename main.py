@@ -1,7 +1,7 @@
 import pygame  # type: ignore
 import sys
 from app.scenes.intro import run_intro
-import app.scenes.jangada2 as jangada2
+import app.scenes.gameplay as gameplay
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
 
     Observações:
         - A função run_intro retorna uma string que indica a ação seguinte.
-        - `jangada2.main()` deve conter o loop principal do jogo em si.
+        - `gameplay.main()` deve conter o loop principal do jogo em si.
     """
         
     pygame.init()
@@ -35,7 +35,7 @@ def main():
 
     if resultado == "iniciar":
         pygame.quit()
-        jangada2.main()
+        gameplay.main()
         return
 
     pygame.quit()
