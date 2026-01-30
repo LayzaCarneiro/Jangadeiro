@@ -15,6 +15,8 @@ from engine.fill.scanline import scanline_fill, scanline_fill_gradiente
 from engine.math.auxiliary import interpolar_cor
 from engine.geometry.transform import rotacionar_pontos_em_torno_de
 from engine.collision import check_collision_raft_obstacle
+from app.scenes.game_over import run_game_over
+from app.scenes.victory import run_victory
 from engine.geometry.cohen_sutherland import draw_line
 
 def _set_pixel_scaled(superficie, base_x, base_y, local_x, local_y, cor, scale):
@@ -455,184 +457,174 @@ def main():
     WORLD_WIDTH = 3000
     WORLD_HEIGHT = 3000
 
-    # ===== POSIÇÕES NO MUNDO =====
-    raft_x = WORLD_WIDTH // 2
-    raft_y = WORLD_HEIGHT // 2
-    speed = 4
+    while True:
+        # ===== POSIÇÕES NO MUNDO (reset a cada "jogar novamente") =====
+        raft_x = WORLD_WIDTH // 2
+        raft_y = WORLD_HEIGHT // 2
+        speed = 4
 
-    # Peixe no mundo
-    fish_x = random.randint(100, WORLD_WIDTH - 100)
-    fish_y_base = random.randint(100, WORLD_HEIGHT - 100)
-    fish_y = fish_y_base
+        fish_x = random.randint(100, WORLD_WIDTH - 100)
+        fish_y_base = random.randint(100, WORLD_HEIGHT - 100)
+        fish_y = fish_y_base
 
-    # Animação do peixe
-    fish_animation_offset = 0.0
-    fish_animation_speed = 0.15
-    fish_animation_range = 8
+        fish_animation_offset = 0.0
+        fish_animation_speed = 0.15
+        fish_animation_range = 8
 
-    # Obstáculos no mundo
-    NUM_OBSTACULOS = 5
-    obstaculos = []
-    while len(obstaculos) < NUM_OBSTACULOS:
-        ox = random.randint(100, WORLD_WIDTH - 100)
-        oy = random.randint(100, WORLD_HEIGHT - 100)
+        NUM_OBSTACULOS = 5
+        obstaculos = []
+        while len(obstaculos) < NUM_OBSTACULOS:
+            ox = random.randint(100, WORLD_WIDTH - 100)
+            oy = random.randint(100, WORLD_HEIGHT - 100)
+            if abs(ox - fish_x) < 80 and abs(oy - fish_y_base) < 80:
+                continue
+            obstaculos.append([ox, oy])
 
-        if abs(ox - fish_x) < 80 and abs(oy - fish_y_base) < 80:
-            continue
+        pontos = 0
+        vidas = 3
 
-        obstaculos.append([ox, oy])
+        rotation_frames_left = 0
+        ROTATION_TOTAL_FRAMES = 60
 
-    pontos = 0
-    vidas = 3
+        hud_scale_effect_frames = 0
+        HUD_SCALE_EFFECT_FRAMES = 60
 
-    # Estado da rotação ao colidir com pedra (360°)
-    rotation_frames_left = 0
-    ROTATION_TOTAL_FRAMES = 60  # 1 segundo a 60 FPS
+        running = True
+        while running:
+            screen.fill(color.SEA_COLOR)
 
-    # Efeito de escala do HUD ao ganhar ponto ou perder vida (~1 s)
-    hud_scale_effect_frames = 0
-    HUD_SCALE_EFFECT_FRAMES = 60
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-    running = True
-    while running:
-        screen.fill(color.SEA_COLOR)
+            # ===== INPUT (MOVE NO MUNDO) — desabilitado durante rotação =====
+            if rotation_frames_left <= 0:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_w]:
+                    raft_y -= speed
+                if keys[pygame.K_s]:
+                    raft_y += speed
+                if keys[pygame.K_a]:
+                    raft_x -= speed
+                if keys[pygame.K_d]:
+                    raft_x += speed
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            # Limites do MUNDO
+            raft_x = max(0, min(WORLD_WIDTH - RAFT_LARGURA, raft_x))
+            raft_y = max(0, min(WORLD_HEIGHT - RAFT_ALTURA, raft_y))
+
+            # ===== CÂMERA (VIEWPORT) =====
+            camera_x = raft_x - WIDTH // 2
+            camera_y = raft_y - HEIGHT // 2
+
+            camera_x = max(0, min(WORLD_WIDTH - WIDTH, camera_x))
+            camera_y = max(0, min(WORLD_HEIGHT - HEIGHT, camera_y))
+
+            viewport = (camera_x, camera_y, WIDTH, HEIGHT)
+
+            # ===== ANIMAÇÃO DO PEIXE =====
+            fish_animation_offset += fish_animation_speed
+            fish_y = fish_y_base + math.sin(fish_animation_offset) * fish_animation_range
+
+            # ===== COLISÕES (EM COORDENADAS DO MUNDO) =====
+            if check_collision(raft_x, raft_y, fish_x, fish_y_base):
+                pontos += 1
+                fish_x = random.randint(100, WORLD_WIDTH - 100)
+                fish_y_base = random.randint(100, WORLD_HEIGHT - 100)
+                fish_animation_offset = 0.0
+                hud_scale_effect_frames = HUD_SCALE_EFFECT_FRAMES  # Reação: HUD em escala maior
+
+            # Colisão jangada × pedra (engine): perde vida e inicia rotação 360°
+            if rotation_frames_left <= 0:
+                for obs in obstaculos[:]:
+                    if check_collision_raft_obstacle(
+                        raft_x, raft_y, RAFT_LARGURA, RAFT_ALTURA,
+                        obs[0], obs[1], OBSTACLE_RADIUS
+                    ):
+                        vidas -= 1
+                        obstaculos.remove(obs)
+                        rotation_frames_left = ROTATION_TOTAL_FRAMES
+                        hud_scale_effect_frames = HUD_SCALE_EFFECT_FRAMES  # Reação: HUD em escala maior
+                        break
+
+            # Avanço da animação de rotação (0 → 2π)
+            if rotation_frames_left > 0:
+                rotation_frames_left -= 1
+
+            # Avanço do efeito de escala do HUD (~1 s)
+            if hud_scale_effect_frames > 0:
+                hud_scale_effect_frames -= 1
+
+            if vidas <= 0:
                 running = False
+                resultado = "GAME OVER"
+            elif pontos >= 5:
+                running = False
+                resultado = "VITORIA"
 
-        # ===== INPUT (MOVE NO MUNDO) — desabilitado durante rotação =====
-        if rotation_frames_left <= 0:
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_w]:
-                raft_y -= speed
-            if keys[pygame.K_s]:
-                raft_y += speed
-            if keys[pygame.K_a]:
-                raft_x -= speed
-            if keys[pygame.K_d]:
-                raft_x += speed
-
-        # Limites do MUNDO
-        raft_x = max(0, min(WORLD_WIDTH - RAFT_LARGURA, raft_x))
-        raft_y = max(0, min(WORLD_HEIGHT - RAFT_ALTURA, raft_y))
-
-        # ===== CÂMERA (VIEWPORT) =====
-        camera_x = raft_x - WIDTH // 2
-        camera_y = raft_y - HEIGHT // 2
-
-        camera_x = max(0, min(WORLD_WIDTH - WIDTH, camera_x))
-        camera_y = max(0, min(WORLD_HEIGHT - HEIGHT, camera_y))
-
-        viewport = (camera_x, camera_y, WIDTH, HEIGHT)
-
-        # ===== ANIMAÇÃO DO PEIXE =====
-        fish_animation_offset += fish_animation_speed
-        fish_y = fish_y_base + math.sin(fish_animation_offset) * fish_animation_range
-
-        # ===== COLISÕES (EM COORDENADAS DO MUNDO) =====
-        if check_collision(raft_x, raft_y, fish_x, fish_y_base):
-            pontos += 1
-            fish_x = random.randint(100, WORLD_WIDTH - 100)
-            fish_y_base = random.randint(100, WORLD_HEIGHT - 100)
-            fish_animation_offset = 0.0
-            hud_scale_effect_frames = HUD_SCALE_EFFECT_FRAMES  # Reação: HUD em escala maior
-
-        # Colisão jangada × pedra (engine): perde vida e inicia rotação 360°
-        if rotation_frames_left <= 0:
-            for obs in obstaculos[:]:
-                if check_collision_raft_obstacle(
-                    raft_x, raft_y, RAFT_LARGURA, RAFT_ALTURA,
-                    obs[0], obs[1], OBSTACLE_RADIUS
-                ):
-                    vidas -= 1
-                    obstaculos.remove(obs)
-                    rotation_frames_left = ROTATION_TOTAL_FRAMES
-                    hud_scale_effect_frames = HUD_SCALE_EFFECT_FRAMES  # Reação: HUD em escala maior
-                    break
-
-        # Avanço da animação de rotação (0 → 2π)
-        if rotation_frames_left > 0:
-            rotation_frames_left -= 1
-
-        # Avanço do efeito de escala do HUD (~1 s)
-        if hud_scale_effect_frames > 0:
-            hud_scale_effect_frames -= 1
-
-        if vidas <= 0:
-            running = False
-            resultado = "GAME OVER"
-        elif pontos >= 5:
-            running = False
-            resultado = "VITORIA"
-
-        # ===== DESENHO (MUNDO → VIEWPORT) =====
-        draw_waves_around_fish(
-            screen,
-            fish_x - camera_x,
-            fish_y_base - camera_y,
-            fish_animation_offset
-        )
-
-        draw_fish(
-            screen,
-            fish_x - camera_x,
-            int(fish_y - camera_y)
-        )
-
-        for obs in obstaculos:
-            draw_obstacle(
+            # ===== DESENHO (MUNDO → VIEWPORT) =====
+            draw_waves_around_fish(
                 screen,
-                obs[0] - camera_x,
-                obs[1] - camera_y
+                fish_x - camera_x,
+                fish_y_base - camera_y,
+                fish_animation_offset
             )
 
-        # Ângulo de rotação ao colidir com pedra (0 → 2π)
-        raft_angle = 0.0
-        if rotation_frames_left > 0:
-            raft_angle = (ROTATION_TOTAL_FRAMES - rotation_frames_left) / ROTATION_TOTAL_FRAMES * 2 * math.pi
-        draw_raft(
-            screen,
-            raft_x - camera_x,
-            raft_y - camera_y,
-            viewport,
-            angle=raft_angle
-        )
+            draw_fish(
+                screen,
+                fish_x - camera_x,
+                int(fish_y - camera_y)
+            )
 
-        draw_minimap(
-            screen,
-            raft_x, raft_y,
-            fish_x, fish_y_base,
-            obstaculos,
-            camera_x, camera_y,
-            WORLD_WIDTH, WORLD_HEIGHT,
-            WIDTH, HEIGHT
-        )
+            for obs in obstaculos:
+                draw_obstacle(
+                    screen,
+                    obs[0] - camera_x,
+                    obs[1] - camera_y
+                )
 
+            # Ângulo de rotação ao colidir com pedra (0 → 2π)
+            raft_angle = 0.0
+            if rotation_frames_left > 0:
+                raft_angle = (ROTATION_TOTAL_FRAMES - rotation_frames_left) / ROTATION_TOTAL_FRAMES * 2 * math.pi
+            draw_raft(
+                screen,
+                raft_x - camera_x,
+                raft_y - camera_y,
+                viewport,
+                angle=raft_angle
+            )
 
-        # ===== HUD (NÃO USA CÂMERA) =====
-        # Escala maior por ~1 s ao ganhar ponto ou perder vida
-        hud_scale = 2 if hud_scale_effect_frames > 0 else 1
-        draw_heart_icon(screen, 10, 28, tamanho=5, scale=hud_scale)
-        draw_simple_text(screen, str(vidas), 28, 30, (255, 255, 255), scale=hud_scale)
+            draw_minimap(
+                screen,
+                raft_x, raft_y,
+                fish_x, fish_y_base,
+                obstaculos,
+                camera_x, camera_y,
+                WORLD_WIDTH, WORLD_HEIGHT,
+                WIDTH, HEIGHT
+            )
 
-        draw_fish_icon(screen, 10, 10, tamanho=10, scale=hud_scale)
-        draw_simple_text(screen, str(pontos), 25, 10, (255, 255, 255), scale=hud_scale)
+            # ===== HUD (NÃO USA CÂMERA) =====
+            hud_scale = 2 if hud_scale_effect_frames > 0 else 1
+            draw_heart_icon(screen, 10, 28, tamanho=5, scale=hud_scale)
+            draw_simple_text(screen, str(vidas), 28, 30, (255, 255, 255), scale=hud_scale)
 
-        pygame.display.flip()
-        clock.tick(60)
+            draw_fish_icon(screen, 10, 10, tamanho=10, scale=hud_scale)
+            draw_simple_text(screen, str(pontos), 25, 10, (255, 255, 255), scale=hud_scale)
 
-    # ===== TELA FINAL =====
-    screen.fill(color.SEA_COLOR)
-    if resultado == "GAME OVER":
-        draw_simple_text(screen, "0", WIDTH//2 - 6, HEIGHT//2, color.GAME_OVER_RED)
-        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, color.GAME_OVER_RED)
-    else:
-        draw_simple_text(screen, "5", WIDTH//2 - 6, HEIGHT//2, color.WIN_GREEN)
-        draw_simple_text(screen, "P", WIDTH//2 - 6, HEIGHT//2 + 10, color.WIN_GREEN)
+            pygame.display.flip()
+            clock.tick(60)
 
-    pygame.display.flip()
-    pygame.time.delay(2500)
+        # ===== TELA FINAL: Game Over ou Vitória =====
+        if resultado == "GAME OVER":
+            escolha = run_game_over(screen)
+        else:
+            escolha = run_victory(screen)
+
+        if escolha == "sair":
+            break
+        # "jogar_novamente" → loop continua e estado é resetado no início do while True
 
     pygame.quit()
     sys.exit()
