@@ -1,1 +1,8 @@
+# Jangada das Estrelas - Dependências
+# Instale com: pip install -r requirements.txt
+
+# Biblioteca principal para jogos 2D
 pygame>=2.5.0
+
+# (Opcional) Para visualizar documentação Markdown via terminal
+# grip>=4.6.0
