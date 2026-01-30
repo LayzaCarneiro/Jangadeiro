@@ -25,9 +25,18 @@ def draw_waves(tela, largura, altura):
             bresenham(tela, x, y, x + 30, y + 5, color.WAVE)
 
 
-def draw_background(tela, largura, altura):
-    # Céu
-    tela.fill(color.SKY_DUSK_BLUE)
+def draw_background(tela, largura, altura, textura_ceu=None, textura_mar=None, textura_areia=None):
+    # Céu com textura
+    if textura_ceu:
+        ceu = [
+            (0, 0),
+            (largura, 0),
+            (largura, altura // 2),
+            (0, altura // 2)
+        ]
+        scanline_texture_ceu(tela, ceu, textura_ceu, largura, altura // 2)
+    else:
+        tela.fill(color.SKY_DUSK_BLUE)
 
     # Mar
     mar = [
@@ -36,7 +45,10 @@ def draw_background(tela, largura, altura):
         (largura, altura),
         (0, altura)
     ]
-    scanline_fill(tela, mar, color.SEA_COLOR)
+    if textura_mar:
+        scanline_texture_ceu(tela, mar, textura_mar, largura, altura // 2, altura // 2)
+    else:
+        scanline_fill(tela, mar, color.SEA_COLOR)
 
     # Areia
     areia = [
@@ -45,7 +57,55 @@ def draw_background(tela, largura, altura):
         (largura, altura),
         (0, altura)
     ]
-    scanline_fill(tela, areia, color.SUN_ORANGE)
+    if textura_areia:
+        scanline_texture_ceu(
+            tela,
+            areia,
+            textura_areia,
+            largura,
+            altura - (altura // 2 + 120),
+            altura // 2 + 120
+        )
+    else:
+        scanline_fill(tela, areia, color.SUN_ORANGE)
+
+
+def scanline_texture_ceu(tela, pontos, textura, width, height, y_offset=0):
+    """Preenche polígono com textura do céu usando scanline."""
+    tex_w, tex_h = textura.get_width(), textura.get_height()
+    n = len(pontos)
+    ys = [p[1] for p in pontos]
+    y_min = int(min(ys))
+    y_max = int(max(ys))
+
+    for y in range(y_min, y_max):
+        inter = []
+        for i in range(n):
+            x0, y0 = pontos[i]
+            x1, y1 = pontos[(i + 1) % n]
+            if y0 == y1:
+                continue
+            if y0 > y1:
+                x0, y0, x1, y1 = x1, y1, x0, y0
+            if y < y0 or y >= y1:
+                continue
+            t = (y - y0) / (y1 - y0)
+            x = x0 + t * (x1 - x0)
+            inter.append(x)
+        inter.sort()
+        for i in range(0, len(inter), 2):
+            if i + 1 >= len(inter):
+                continue
+            x_start = int(inter[i])
+            x_end = int(inter[i + 1])
+            for x in range(x_start, x_end + 1):
+                tx = int((x / width) * (tex_w - 1)) if width > 0 else 0
+                ty = int(((y - y_offset) / height) * (tex_h - 1)) if height > 0 else 0
+                tx = max(0, min(tx, tex_w - 1))
+                ty = max(0, min(ty, tex_h - 1))
+                if 0 <= x < width and 0 <= (y - y_offset) < height:
+                    cor = textura.get_at((tx, ty))[:3]
+                    tela.set_at((x, y), cor)
 
 
 def draw_character_translated(tela, cx, cy, dx, dy):
@@ -112,6 +172,10 @@ def run_intro(tela):
 
     largura, altura = tela.get_size()
     viewport = (0, 0, largura, altura)  # xmin, ymin, xmax, ymax
+    
+    textura_ceu = pygame.image.load("assets/textures/ceu.png").convert()
+    textura_mar = pygame.image.load("assets/textures/mar.png").convert()
+    textura_areia = pygame.image.load("assets/textures/areia.png").convert()
 
     # posição inicial do jangadeiro (fora da tela à esquerda)
     dx = -330  # começa bem fora
@@ -128,7 +192,7 @@ def run_intro(tela):
 
         tela.fill(color.SKY_DUSK_BLUE)
 
-        draw_background(tela, largura, altura)
+        draw_background(tela, largura, altura, textura_ceu, textura_mar, textura_areia)
 
         # jangadeiro andando em direção ao mar
         if dx < 0:
@@ -174,7 +238,17 @@ def run_intro(tela):
                 (largura, altura),
                 (0, altura)
             ]
-            scanline_fill(tela, mar, color.SEA_COLOR)
+            if textura_mar:
+                scanline_texture_ceu(
+                    tela,
+                    mar,
+                    textura_mar,
+                    largura,
+                    altura // 2 + mar_offset,
+                    altura // 2 - mar_offset
+                )
+            else:
+                scanline_fill(tela, mar, color.SEA_COLOR)
 
             # fade escuro
             fade = pygame.Surface((largura, altura))
