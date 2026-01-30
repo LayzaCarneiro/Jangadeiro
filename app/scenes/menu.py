@@ -63,7 +63,7 @@ def run_menu(superficie):
         draw_title_scene(superficie, w, h)
 
         # Título
-        titulo = "JANGADA DAS ESTRELAS"
+        titulo = "JANGADEIRO: DRAGAO DO MAR"
         tw_approx = len(titulo) * 6 * 2
         draw_text(superficie, titulo, (w - tw_approx) // 2, int(h * 0.22), color.TITLE, scale=2)
 

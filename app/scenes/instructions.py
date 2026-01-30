@@ -1,7 +1,7 @@
 # app/scenes/instructions.py
 # -*- coding: utf-8 -*-
 """
-Tela de instruções do jogo "Jangada das Estrelas".
+Tela de instruções do jogo "Jangadeiro: Dragão do Mar".
 
 Inclui:
 - Gradiente de fundo
@@ -16,25 +16,8 @@ import math
 import assets.colors as color
 from app.scenes.auxiliary_functions import draw_button, ponto_em_retangulo, draw_text
 from engine.raster.line import bresenham
-from engine.fill.scanline import scanline_fill
+from engine.fill.scanline import scanline_fill, scanline_fill_gradiente
 from engine.raster.circle import draw_circle
-
-def draw_gradient_bg(surf, top_color, bottom_color):
-    """
-    Desenha um gradiente vertical do topo para a base da superfície.
-
-    Args:
-        surf: pygame.Surface onde desenhar.
-        top_color: RGB da cor superior.
-        bottom_color: RGB da cor inferior.
-    """
-    w, h = surf.get_size()
-    for y in range(h):
-        ratio = y / h
-        r = int(top_color[0] * (1 - ratio) + bottom_color[0] * ratio)
-        g = int(top_color[1] * (1 - ratio) + bottom_color[1] * ratio)
-        b = int(top_color[2] * (1 - ratio) + bottom_color[2] * ratio)
-        pygame.draw.line(surf, (r, g, b), (0, y), (w, y))
 
 
 def draw_waves_bottom(surf, altura, largura, offset=0):
@@ -99,7 +82,10 @@ def run_instructions(superficie):
         # ----------------------
         # Fundo
         # ----------------------
-        draw_gradient_bg(superficie, color.BG_TOP, color.BG_BOTTOM)
+        largura = superficie.get_width()
+        altura = superficie.get_height()
+        pontos_tela = [(0,0), (largura-1,0), (largura-1,altura-1), (0,altura-1)]
+        scanline_fill_gradiente(superficie, pontos_tela, color.BG_TOP, color.BG_BOTTOM, direcao='vertical')
         draw_waves_bottom(superficie, h, w, offset=frame)
         draw_decor_peixes(superficie, w, h)
 

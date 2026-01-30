@@ -2,7 +2,7 @@
 
 ## 1. Visão Geral
 
-A tela inicial do jogo "Jangada das Estrelas" foi implementada seguindo o requisito de **renderização exclusiva via `set_pixel`**, utilizando os algoritmos de rasterização desenvolvidos no engine do projeto. Todos os elementos visuais (sol, horizonte, ondas, título, botões) são desenhados através de primitivas gráficas implementadas manualmente, sem uso de funções de alto nível do Pygame (exceto `fill()` para o fundo, por questões de performance).
+A tela inicial do jogo "Jangadeiro: Dragão do Mar" foi implementada seguindo o requisito de **renderização exclusiva via `set_pixel`**, utilizando os algoritmos de rasterização desenvolvidos no engine do projeto. Todos os elementos visuais (sol, horizonte, ondas, título, botões) são desenhados através de primitivas gráficas implementadas manualmente, sem uso de funções de alto nível do Pygame (exceto `fill()` para o fundo, por questões de performance).
 
 ---
 
@@ -260,7 +260,7 @@ while True:
     draw_title_scene(superficie, w, h)
     
     # 3. Desenhar título
-    draw_text(superficie, "JANGADA DAS ESTRELAS", ...)
+    draw_text(superficie, "JANGADEIRO: DRAGÃO DO MAR", ...)
     
     # 4. Desenhar botões
     draw_button(..., "INICIAR", ...)
@@ -289,20 +289,20 @@ while True:
 
 ## 6. Integração com main.py
 
-### 6.1 Fluxo de Navegação Menu → Gameplay (`jangada2.py`)
+### 6.1 Fluxo de Navegação Menu → Gameplay (`gameplay.py`)
 
 ```python
 import pygame
 import sys
 from menu import run_menu
-import jangada2
+import gameplay
 
 
 def main():
     pygame.init()
     largura, altura = 1000, 1000
     tela = pygame.display.set_mode((largura, altura))
-    pygame.display.set_caption("Jangada das Estrelas")
+    pygame.display.set_caption("Jangadeiro: Dragão do Mar")
 
     resultado = run_menu(tela)  # Exibe menu, aguarda escolha
 
@@ -313,7 +313,7 @@ def main():
     if resultado == "iniciar":
         # Encerra o contexto atual e delega para o gameplay da jangada
         pygame.quit()
-        jangada2.main()  # Executa a cena de gameplay definida em jangada2.py
+        gameplay.main()  # Executa a cena de gameplay definida em gameplay.py
         return
 
     pygame.quit()
@@ -324,7 +324,7 @@ def main():
 
 - `main.py` inicializa Pygame e exibe o **menu inicial** (`run_menu`).
 - Botão **“Sair”** ou tecla **ESC** → encerra o programa.
-- Botão **“Iniciar”** → fecha o contexto gráfico atual e chama `jangada2.main()`,
+- Botão **“Iniciar”** → fecha o contexto gráfico atual e chama `gameplay.main()`,
   que renderiza:
   - a **jangada animada** e controlável (WASD),
   - os **peixes animados** com gradiente,

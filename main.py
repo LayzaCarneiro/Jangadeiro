@@ -6,7 +6,7 @@ import app.scenes.gameplay as gameplay
 
 def main():
     """
-    Ponto de entrada principal do jogo "Jangada das Estrelas".
+    Ponto de entrada principal do jogo "Jangadeiro: Dragão do Mar".
 
     Fluxo:
         1. Inicializa o pygame.
@@ -14,7 +14,7 @@ def main():
         3. Executa a cena de introdução (run_intro).
         4. Dependendo do resultado da introdução:
             - "sair": encerra o jogo.
-            - "iniciar": fecha a janela atual e chama a função principal de `jangada2`.
+            - "iniciar": fecha a janela atual e chama a função principal de `gameplay`.
         5. Fecha o pygame e encerra o programa em qualquer outro caso.
 
     Observações:
@@ -25,7 +25,7 @@ def main():
     pygame.init()
     largura, altura = 1000, 800
     tela = pygame.display.set_mode((largura, altura))
-    pygame.display.set_caption("Jangada das Estrelas")
+    pygame.display.set_caption("Jangadeiro: Dragão do Mar")
 
     resultado = run_intro(tela)
 

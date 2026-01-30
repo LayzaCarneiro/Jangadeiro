@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-História introdutória do jogo "Jangada das Estrelas"
+História introdutória do jogo "Jangadeiro: Dragão do Mar"
 - Mostra a história dos jangadeiros do Ceará
 - Antes do menu do jogo
 """
@@ -79,34 +79,49 @@ def draw_peixe(surf, x, y, scale=1):
 slides = [
     {
         "texto": [
-            "Nas areias brancas do Ceará, o sol dita o ritmo da vida.",
+            "Nas areias brancas do Ceara, o sol dita o ritmo da vida.",
             "Entre as ondas e o vento, surge a figura de um homem",
-            "que se tornaria lenda: Francisco José do Nascimento."
+            "que se tornaria lenda: Francisco Jose do Nascimento."
         ],
         "draw_extra": lambda surf, w, h: draw_sun(surf, int(w*0.85), int(h*0.15), 50, SUN)
     },
     {
         "texto": [
-            "Conhecido como 'Dragão do Mar', ele liderou jangadeiros",
+            "Conhecido como 'Dragao do Mar', ele liderou jangadeiros",
             "em uma luta por liberdade, provando que o mar",
-            "não aceita correntes, nem escravidão."
+            "nao aceita correntes, nem escravidao."
         ],
-        "draw_extra": lambda surf, w, h: draw_jangada(surf, int(w/2 - 25), int(h*0.6)) 
-        # Dica: Desenhe uma jangada com a vela branca e o símbolo do Dragão!
+        "draw_extra": lambda surf, w, h: draw_jangada(surf, int(w/2 - 25), int(h*0.6))
     },
     {
         "texto": [
-            "Mas antes da glória, havia a sobrevivência.",
-            "Para manter sua vila e sua jangada, Francisco precisa",
-            "enfrentar a fúria do oceano e garantir o sustento."
+            "A rotina era bruta. Antes do sol nascer, o buzios soava.",
+            "Sem bussola, os jangadeiros liam o ceu e as correntes.",
+            "À noite, o Cruzeiro do Sul era o guia para o porto seguro."
+        ],
+        "draw_extra": lambda surf, w, h: draw_stars(surf, w, h) # Sugestão: Desenhar o Cruzeiro do Sul
+    },
+    {
+        "texto": [
+            "Navegavam ate o 'fundo', onde a agua muda de cor.",
+            "La, o peixe e farto, mas o perigo e constante.",
+            "Cada onda vencida era uma vitoria para a comunidade."
+        ],
+        "draw_extra": lambda surf, w, h: draw_deep_sea(surf) # Sugestão: Ondas mais escuras/fortes
+    },
+    {
+        "texto": [
+            "Agora, voce navegara ao lado do Dragao do Mar!",
+            "Sua missao e ajuda-lo a pescar os peixes mais valiosos",
+            "enquanto desvia das pedras e perigos que surgem no caminho."
         ],
         "draw_extra": lambda surf, w, h: draw_peixe(surf, int(w/2), int(h*0.5))
     },
     {
         "texto": [
-            "Assuma o leme da jangada 'Libertadora'!",
-            "Use W, A, S, D para navegar, colete peixes e",
-            "desvie dos arrecifes para proteger sua tripulação."
+            "Mantenha os olhos nas estrelas para nao perder o rumo.",
+            "Assuma o leme da 'Libertadora', use W, A, S, D para navegar",
+            "e proteja sua tripulacao dos arrecifes traiçoeiros!"
         ],
         "draw_extra": lambda surf, w, h: None
     }
