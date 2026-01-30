@@ -251,7 +251,6 @@ project-name/
 A documentação completa do projeto está disponível em:
 
 - **[docs/documentacao.md](docs/documentacao.md)** – Documentação técnica da engine e sistema de telas
-- **[docs/implementacao_tela_inicial.md](docs/implementacao_tela_inicial.md)** – Detalhes da implementação das telas
 
 ---
 
