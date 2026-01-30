@@ -21,28 +21,49 @@ import math
 import assets.colors as color
 from app.scenes.auxiliary_functions import randint, draw_text
 from engine.fill.flood_fill import flood_fill_iterativo
+from engine.raster.line import bresenham
+from engine.raster.circle import draw_circle
+from engine.raster.elipse import draw_elipse
 from engine.framebuffer import set_pixel
 from app.entities.raft import draw_jangada
 from app.entities.fish import draw_fish
+from assets.music_manager import music_manager
 
 # ─── Funções Auxiliares ───
 def draw_waves(surf, y_start, y_end, amplitude=10, wavelength=50, color=(25, 104, 163)):
-    """Desenha ondas simples no mar."""
+    """Desenha ondas simples no mar usando flood fill."""
     w = surf.get_width()
+    # Desenha o contorno superior das ondas
     for x in range(w):
         y = int(amplitude * math.sin(2 * math.pi * x / wavelength))
-        for yy in range(y_start + y, y_end):
-            set_pixel(surf, x, yy, color)
+        set_pixel(surf, x, y_start + y, color)  # contorno superior
+
+    # Preenche a região abaixo do contorno com flood fill
+    for x in range(0, w, max(1, w//20)):  # algumas amostras horizontais para iniciar o flood fill
+        flood_fill_iterativo(
+            surf,
+            x=x,
+            y=y_start + amplitude + 1,  # ponto logo abaixo do contorno
+            cor_preenchimento=color,
+            cor_borda=None  # None significa que ele vai preencher até encontrar pixels não vazios
+        )
 
 def draw_sand_gradient(surf, y_start, y_end, top_color=color.SAND, bottom_color=(210, 180, 140)):
-    """Gradiente simples para areia da praia."""
-    h = y_end - y_start
-    for y in range(h):
-        r = int(top_color[0] + (bottom_color[0]-top_color[0]) * y / h)
-        g = int(top_color[1] + (bottom_color[1]-top_color[1]) * y / h)
-        b = int(top_color[2] + (bottom_color[2]-top_color[2]) * y / h)
-        for x in range(surf.get_width()):
-            set_pixel(surf, x, y_start + y, (r, g, b))
+    """Gradiente para areia usando flood fill."""
+    # Desenha contornos simples (linha horizontal no topo e no final)
+    for x in range(surf.get_width()):
+        set_pixel(surf, x, y_start, top_color)
+        set_pixel(surf, x, y_end-1, bottom_color)
+
+    # Preenche a área usando flood fill em vários pontos horizontais
+    for x in range(0, surf.get_width(), max(1, surf.get_width()//20)):
+        flood_fill_iterativo(
+            surf,
+            x=x,
+            y=y_start+1,
+            cor_preenchimento=top_color,
+            cor_borda=None
+        )
 
 
 # ─── Slides da História ───
@@ -58,11 +79,23 @@ slides = [
             "nao aceita correntes, nem escravidao."
         ],
         "draw_extra": lambda surf, w, h: (
-            draw_sand_gradient(surf, int(h*0.8), h),
             draw_waves(surf, int(h*0.6), int(h*0.8)),
+            draw_sand_gradient(surf, int(h*0.8), h),
             draw_jangada(surf, int(w*0.3), int(h*0.7), scale=0.7),
             draw_jangada(surf, int(w*0.6), int(h*0.72), scale=0.5),
-            draw_jangada(surf, int(w*0.75), int(h*0.68), scale=0.6)
+            draw_jangada(surf, int(w*0.75), int(h*0.68), scale=0.6), 
+            
+            (lambda stars: (
+                # Desenha estrelas
+                [set_pixel(surf, x, y, (180, 220, 255)) for x, y in stars],
+                # Conecta estrelas com Bresenham em azul
+                [bresenham(surf, stars[i][0], stars[i][1], stars[i+1][0], stars[i+1][1], color.SKY_DUSK_BLUE)
+                for i in range(len(stars)-1)]
+            ))([(int(w*0.7), int(h*0.1)),
+                (int(w*0.78), int(h*0.12)),
+                (int(w*0.85), int(h*0.08)),
+                (int(w*0.9), int(h*0.13)),
+                (int(w*0.95), int(h*0.05))]),  # lista de estrelas no canto direito
         )
     },
     {
@@ -139,6 +172,8 @@ def run_story(superficie):
     slide_index = 0
     clock = pygame.time.Clock()
 
+    music_manager.play("menu")
+
     while slide_index < len(slides):
         superficie.fill(color.SKY)  # fundo inicial do céu
 
@@ -146,7 +181,10 @@ def run_story(superficie):
         flood_fill_iterativo(superficie, x=w//2, y=3*h//4, 
                             cor_preenchimento=color.SEA, 
                             cor_borda=color.SKY) 
-
+        
+        [draw_circle(superficie, randint(0, w-1), randint(0, int(h*0.5)), 1, (255,255,255)) for _ in range(100)],
+        [draw_elipse(superficie, randint(0, w-1), randint(int(h*0.6), h-1), randint(2,4), randint(1,3), (180,220,255)) for _ in range(50)],
+ 
         slide = slides[slide_index]
         y_text = int(h*0.1)
         for line in slide["texto"]:
