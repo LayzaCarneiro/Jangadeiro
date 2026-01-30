@@ -41,7 +41,7 @@ RAFT_ALTURA = 85  # altura_proa (15) + comprimento (70)
 ALTURA_PROA = 15
 COMPRIMENTO = 70
 
-def draw_raft(superficie, x, y, angle=0, viewport):
+def draw_raft(superficie, x, y, viewport, angle=0):
     """
     Desenha uma jangada estilizada com gradiente marrom.
     angle: rotação em radianos em torno do centro da jangada (0 = sem rotação).
@@ -595,8 +595,8 @@ def main():
             screen,
             raft_x - camera_x,
             raft_y - camera_y,
-            angle=raft_angle,
-            viewport
+            viewport,
+            angle=raft_angle
         )
 
         draw_minimap(
