@@ -111,12 +111,6 @@ pip install -r requirements.txt
    ```
    (ou `python3 main.py` no Linux/macOS)
 
-2. Execute o jogo:
-   ```bash
-   python main.py
-   ```
-   (ou `python3 main.py`)
-
 2. Na tela inicial (após animação de introdução):
    - **INICIAR** – inicia o jogo
    - **COMO JOGAR** – exibe instruções e controles
