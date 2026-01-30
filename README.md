@@ -1,6 +1,36 @@
-# Jangada das Estrelas 🚣
+# Jangadeiro: Dragão do Mar 🚣
 
-Jogo 2D desenvolvido em Python com Pygame, utilizando exclusivamente algoritmos de rasterização via `set_pixel`. Projeto acadêmico da disciplica de Computação Gráfica.
+**Jogo 2D desenvolvido em Python com Pygame**, utilizando exclusivamente algoritmos de rasterização via `set_pixel`.
+
+Projeto acadêmico da disciplina de **Computação Gráfica**, desenvolvido para explorar técnicas de rasterização, transformações geométricas, recorte e animação.
+
+---
+
+## Descrição do Projeto
+
+O jogo simula a vida dos **jangadeiros do Ceará**, com elementos históricos e desafios de navegação:
+
+* Tela de abertura com introdução animada mostrando o **Dragão do Mar**.
+* Jogo baseado em **coleta de peixes**, evitando obstáculos.
+* Polígonos, gradientes e preenchimentos são renderizados com **algoritmos manuais**.
+* Interação via teclado (W-A-S-D) e mouse para menus.
+
+---
+
+**Recursos Implementados (Atendem os requisitos do trabalho):**
+
+| Requisito                                 | Implementação no jogo                                                                                                            |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Set Pixel**                             | Todas as primitivas gráficas utilizam `set_pixel`.                                                                               |
+| **Rasterização**                          | Linhas (Bresenham/DDA), círculos (Midpoint Circle) e elipses (Midpoint Ellipse).                                                 |
+| **Preenchimento de regiões**              | Flood Fill para mar e céu, Scanline para polígonos e jangadas.                                                                   |
+| **Transformações geométricas**            | Translação, escala e rotação aplicadas em sprites e polígonos.                                                                   |
+| **Animação 2D**                           | Movimentação do peixe, ondas e estrelas na tela inicial.                                                                         |
+| **Janela e Viewport**                     | Minimapa com escalas de mundo → dispositivo; transformação de coordenadas aplicada; viewport desenhando câmera sobre o minimapa. |
+| **Recorte Cohen-Sutherland**              | Implementado para recorte de obstáculos e movimentação da jangada na tela de jogo.                                               |
+| **Mapeamento de textura**                 | Gradientes e texturas básicas aplicadas em areia e água.                                                                         |
+| **Input (Teclado/Mouse)**                 | Menu interativo, movimento da jangada e ações no jogo.                                                                           |
+| **Menus e interações gráficas avançadas** | Tela de abertura animada, menu interativo, instruções e tela de vitória/game over.                                               |
 
 ---
 
@@ -17,8 +47,8 @@ Jogo 2D desenvolvido em Python com Pygame, utilizando exclusivamente algoritmos 
 ### 1. Clone ou baixe o projeto
 
 ```bash
-git clone <url-do-repositorio>
-cd CG_Trabalho_1
+git clone https://github.com/LayzaCarneiro/Jangadeiro
+cd Jangadeiro
 ```
 
 ### 2. (Opcional) Crie um ambiente virtual
@@ -70,7 +100,7 @@ pip install -r requirements.txt
 
 4. Objetivo:
    - Colete **5 peixes** para vencer
-   - Evite **obstáculos (rochas)** – você tem 3 vidas
+   - Evite **obstáculos** – você tem 3 vidas
 
 ---
 
@@ -120,68 +150,60 @@ project-name/
 ├── README.md
 ├── requirements.txt
 ├── main.py
+├── testes.py
 │
 ├── engine/
 │   ├── __init__.py
 │   │
-│   ├── framebuffer.py      # set_pixel, clear, buffer
+│   ├── framebuffer.py      # set_pixel, clear, clear_color, getPixel
+│   │
+│   ├── collision.py      # check_collision_raft_obstacle, check_collision_raft_fish
 │   │
 │   ├── raster/
-│   │   ├── __init__.py
 │   │   ├── line.py         # Bresenham / DDA
 │   │   ├── circle.py       # Midpoint Circle
 │   │   └── ellipse.py      # Midpoint Ellipse
 │   │
 │   ├── fill/
-│   │   ├── __init__.py
 │   │   ├── flood_fill.py
-│   │   ├── boundary_fill.py
 │   │   └── scanline.py
 │   │
 │   ├── geometry/
-│   │   ├── __init__.py
-│   │   ├── polygon.py      # vértices, edges
 │   │   ├── transform.py    # matrizes 3x3
-│   │   └── clipping.py     # Cohen-Sutherland
-│   │
-│   ├── viewport/
-│   │   ├── __init__.py
-│   │   └── viewport.py     # janela -> viewport
-│   │
-│   ├── texture/
-│   │   ├── __init__.py
-│   │   └── texture.py      # mapeamento UV
+│   │   └── cohen_sutherland.py     # Cohen-Sutherland
 │   │
 │   └── math/
-│       ├── __init__.py
-│       └── matrix.py       # operações auxiliares
+│       └── auxiliary.py       # operações auxiliares
 │
 ├── app/                    # JOGO / SIMULAÇÃO
-│   ├── __init__.py
 │   │
 │   ├── scenes/
 │   │   ├── menu.py
+│   │   ├── auxiliary_functions.py
+│   │   ├── game_over.py
+│   │   ├── history.py
+│   │   ├── instructions.py
+│   │   ├── victory.py
 │   │   ├── intro.py        # tela de abertura
-│   │   └── game.py
+│   │   └── gameplay.py
 │   │
 │   ├── entities/
-│   │   ├── entity.py
-│   │   ├── player.py
+│   │   ├── fish.py
+│   │   ├── icons.py
+│   │   ├── minimap.py
+│   │   ├── raft.py
 │   │   └── obstacle.py
 │   │
-│   ├── input/
-│   │   └── input_handler.py
-│   │
-│   └── state_manager.py
+│   └── constants.py
 │
 ├── assets/
+│   ├── colors.py
+│   ├── music_manager.py
 │   ├── textures/
-│   └── screenshots/
+│   └── music/
 │
 └── docs/
-    ├── design.md
-    ├── algorithms.md
-    └── presentation.md
+    └── documentacao.md
 ```
 
 ---
@@ -208,3 +230,24 @@ A documentação completa do projeto está disponível em:
 ## Licença
 
 Projeto acadêmico desenvolvido para a disciplina de Computação Gráfica.`
+
+Perfeito! Podemos melhorar o README deixando ele **mais alinhado com os requisitos da disciplina**, destacando quais funcionalidades atendem cada item exigido, de forma clara para o professor. Segue uma versão reformulada:
+
+---
+
+# Jangadeiro: Dragão do Mar 🚣
+
+**Jogo 2D desenvolvido em Python com Pygame**, utilizando exclusivamente algoritmos de rasterização via `set_pixel`.
+
+Projeto acadêmico da disciplina de **Computação Gráfica**, desenvolvido para explorar técnicas de rasterização, transformações geométricas, recorte e animação.
+
+---
+
+## Descrição do Projeto
+
+O jogo simula a vida dos **jangadeiros do Ceará**, com elementos históricos e desafios de navegação:
+
+* Tela de abertura com introdução animada mostrando o **Dragão do Mar**.
+* Jogo baseado em **coleta de peixes**, evitando obstáculos.
+* Polígonos, gradientes e preenchimentos são renderizados com **algoritmos manuais**.
+* Interação via teclado (W-A-S-D) e mouse para menus.
