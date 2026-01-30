@@ -19,6 +19,7 @@ from app.scenes.auxiliary_functions import draw_simple_text
 from engine.collision import check_collision_raft_obstacle, check_collision_raft_fish
 from app.scenes.game_over import run_game_over
 from app.scenes.victory import run_victory
+from assets.music_manager import music_manager
 
 def main():
     pygame.init()
@@ -34,6 +35,9 @@ def main():
     WORLD_WIDTH = 3000
     WORLD_HEIGHT = 3000
 
+    # Inicia música do gameplay
+    music_manager.play("gameplay")
+    
     while True:
         # ===== POSIÇÕES NO MUNDO (reset a cada "jogar novamente") =====
         raft_x = WORLD_WIDTH // 2
