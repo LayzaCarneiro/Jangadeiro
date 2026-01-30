@@ -52,14 +52,21 @@ def main():
         fish_animation_speed = 0.15
         fish_animation_range = 8
 
-        NUM_OBSTACULOS = 5
+        # Spawnar obstáculos: 5 de cada tipo (0=rocha, 1=alga, 2=coral)
+        NUM_OBSTACULOS_POR_TIPO = 5
         obstaculos = []
-        while len(obstaculos) < NUM_OBSTACULOS:
-            ox = random.randint(100, WORLD_WIDTH - 100)
-            oy = random.randint(100, WORLD_HEIGHT - 100)
-            if abs(ox - fish_x) < 80 and abs(oy - fish_y_base) < 80:
-                continue
-            obstaculos.append([ox, oy])
+        
+        for tipo in range(3):  # 0=rocha, 1=alga, 2=coral
+            for _ in range(NUM_OBSTACULOS_POR_TIPO):
+                while True:
+                    ox = random.randint(100, WORLD_WIDTH - 100)
+                    oy = random.randint(100, WORLD_HEIGHT - 100)
+                    if abs(ox - fish_x) < 80 and abs(oy - fish_y_base) < 80:
+                        continue
+                    if any(abs(ox - obs[0]) < 80 and abs(oy - obs[1]) < 80 for obs in obstaculos):
+                        continue
+                    obstaculos.append([ox, oy, tipo])
+                    break
 
         pontos = 0
         vidas = 3
@@ -165,7 +172,8 @@ def main():
                 obstacle.draw_obstacle(
                     screen,
                     obs[0] - camera_x,
-                    obs[1] - camera_y
+                    obs[1] - camera_y,
+                    tipo=obs[2]
                 )
 
             # Ângulo de rotação ao colidir com pedra (0 → 2π)
