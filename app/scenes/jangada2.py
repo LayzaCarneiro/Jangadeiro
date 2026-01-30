@@ -14,7 +14,6 @@ from engine.raster.line import bresenham, desenhar_poligono
 from engine.fill.scanline import scanline_fill, scanline_fill_gradiente
 from engine.math.auxiliary import interpolar_cor
 from engine.geometry.cohen_sutherland import draw_line
-from engine.raster.line import bresenham
 
 def draw_raft(superficie, x, y, viewport):
     """
