@@ -13,10 +13,9 @@ Exibe:
 import pygame
 import math
 import assets.colors as color
-from engine.raster.line import desenhar_poligono
 from engine.raster.circle import draw_circle
 from engine.fill.flood_fill import flood_fill_iterativo
-from engine.fill.scanline import scanline_fill
+from engine.fill.scanline import scanline_fill, scanline_fill_gradiente
 from engine.geometry.cohen_sutherland import draw_line_clipped
 from app.scenes.menu import run_menu
 from app.entities.raft import draw_jangada
@@ -113,33 +112,47 @@ def scanline_texture_all(tela, pontos, textura, width, height, y_offset=0):
                     tela.set_at((x, y), textura.get_at((tx, ty))[:3])
 
 
-def draw_character_clipped(tela, cx, cy, dx, dy, viewport):
+def draw_character_clipped(tela, cx, cy, dx, dy):
     """
-    Desenha o personagem com clipping no viewport.
-
-    Args:
-        tela: pygame.Surface onde desenhar.
-        cx, cy: posição central do personagem.
-        dx, dy: deslocamentos do personagem.
-        viewport: tupla (xmin, ymin, xmax, ymax) para clipping.
+    Desenha um jangadeiro estilizado usando polígonos preenchidos via scanline.
+    Corpo, braços e pernas usam scanline_fill ou scanline_fill_gradiente.
+    Cabeça ainda é um círculo preenchido. Adiciona chapéu.
     """
     x = cx + dx
     y = cy + dy
 
-    # Cabeça (continua sem clipping, porque usamos fill)
+    # Cabeça
     draw_circle(tela, x, y, 12, color.DETAIL_COLOR)
     flood_fill_iterativo(tela, x, y, color.SKIN, color.DETAIL_COLOR)
 
-    # Corpo
-    draw_line_clipped(tela, x, y + 12, x, y + 40, color.DETAIL_COLOR, viewport)
+    # Chapéu cônico
+    chapeu = [
+        (x - 12, y - 6),   # base esquerda
+        (x + 12, y - 6),   # base direita
+        (x, y - 22)        # topo
+    ]
+    scanline_fill_gradiente(tela, chapeu, color.WOOD_LIGHT, color.WOOD_DARK, direcao='vertical')
 
-    # Braços
-    draw_line_clipped(tela, x, y + 20, x - 15, y + 30, color.DETAIL_COLOR, viewport)
-    draw_line_clipped(tela, x, y + 20, x + 15, y + 30, color.DETAIL_COLOR, viewport)
+    # Corpo (trapezoide) com gradiente da roupa
+    corpo = [
+        (x - 10, y + 12),
+        (x + 10, y + 12),
+        (x + 8, y + 40),
+        (x - 8, y + 40)
+    ]
+    scanline_fill_gradiente(tela, corpo, color.SEA_GREEN_DARK, color.SEA_GREEN_LIGHT, direcao='vertical')
 
-    # Pernas
-    draw_line_clipped(tela, x, y + 40, x - 10, y + 60, color.DETAIL_COLOR, viewport)
-    draw_line_clipped(tela, x, y + 40, x + 10, y + 60, color.DETAIL_COLOR, viewport)
+    # Braços (polígonos inclinados)
+    braco_esq = [(x - 10, y + 15), (x - 12, y + 18), (x - 20, y + 28), (x - 18, y + 25)]
+    braco_dir = [(x + 10, y + 15), (x + 12, y + 18), (x + 20, y + 28), (x + 18, y + 25)]
+    scanline_fill(tela, braco_esq, color.SKIN)
+    scanline_fill(tela, braco_dir, color.SKIN)
+
+    # Pernas (trapezoides)
+    perna_esq = [(x - 8, y + 40), (x - 2, y + 40), (x - 4, y + 60), (x - 10, y + 60)]
+    perna_dir = [(x + 2, y + 40), (x + 8, y + 40), (x + 10, y + 60), (x + 4, y + 60)]
+    scanline_fill(tela, perna_esq, color.SKIN)
+    scanline_fill(tela, perna_dir, color.SKIN)
 
 
 def draw_raft_translated(tela, largura, altura, dx, scale=3):
@@ -211,7 +224,7 @@ def run_intro(tela):
 
         # jangadeiro andando em direção ao mar
         if dx < 0:
-            dx += 20
+            dx += 30
 
         # jangada balançando levemente
         amplitude = 6      # quanto a jangada se move (pixels)
@@ -231,7 +244,7 @@ def run_intro(tela):
             dy += vel_y
             dy = max(dy, 0)
 
-        draw_character_clipped(tela, cx, cy, dx, dy, viewport)
+        draw_character_clipped(tela, cx, cy, dx, dy)
 
         # =====================
         # Transição para o menu

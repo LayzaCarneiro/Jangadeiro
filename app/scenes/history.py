@@ -13,6 +13,7 @@ from engine.fill.flood_fill import flood_fill_iterativo
 from engine.framebuffer import set_pixel
 from app.entities.raft import draw_jangada
 from app.entities.fish import draw_fish
+from assets.music_manager import music_manager
 
 # =====================================================
 # Funções auxiliares
@@ -133,6 +134,8 @@ def run_story(superficie):
     w, h = superficie.get_width(), superficie.get_height()
     slide_index = 0
     clock = pygame.time.Clock()
+
+    music_manager.play("menu")
 
     while slide_index < len(slides):
         superficie.fill(color.SKY)  # fundo inicial do céu

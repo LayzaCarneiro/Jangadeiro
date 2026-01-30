@@ -16,7 +16,7 @@ class MusicManager:
         """Inicializa o mixer de áudio do pygame."""
         pygame.mixer.init()
         self.current_music = None
-        self.music_volume = 0.0  # Volume padrão (0.0 a 1.0)
+        self.music_volume = 1.0  # Volume padrão (0.0 a 1.0)
         
         # Caminhos das músicas
         self.base_path = os.path.join(os.path.dirname(__file__), "music")

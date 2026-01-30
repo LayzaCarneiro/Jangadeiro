@@ -104,6 +104,7 @@ def draw_simple_text(superficie, texto, x, y, cor, scale=1):
         '9': ['XXX', 'X X', 'XXX', '  X', 'XXX'],
         'P': ['XXX', 'X X', 'XXX', 'X  ', 'X  '],
         ':': ['   ', ' X ', '   ', ' X ', '   '],
+        '/': ['  X', '  X', ' X ', 'X  ', 'X  '],  
     }
     
     dx = 0
