@@ -190,10 +190,7 @@ def run_intro(tela):
     frame = 0
     transition = False
     transition_frame = 0
-
     largura, altura = tela.get_size()
-    viewport = (0, 0, largura, altura)  # xmin, ymin, xmax, ymax
-    
     textura_ceu = pygame.image.load("assets/textures/ceu.png").convert()
     textura_areia = pygame.image.load("assets/textures/areia.png").convert()
 
@@ -280,4 +277,3 @@ def run_intro(tela):
         pygame.display.flip()
         clock.tick(60)
         frame += 1
-
