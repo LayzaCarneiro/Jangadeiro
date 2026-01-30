@@ -34,6 +34,19 @@ O jogo simula a vida dos **jangadeiros do Ceará**, com elementos históricos e 
 
 ---
 
+### Descrição do fluxo:
+
+1. **História** – Animação de abertura com texto e elementos gráficos (jangadas, mar, céu).  
+2. **Intro** – Tela de introdução com efeitos visuais e música.  
+3. **Menu** – Tela principal do jogo com opções:
+   - **Iniciar** – Começa a partida.  
+   - **Como Jogar** – Mostra instruções e controles.  
+   - **Sair** – Fecha o jogo.  
+4. **Gameplay** – Tela principal do jogo onde o jogador controla a jangada, coleta peixes e evita obstáculos.  
+5. **Jogar de novo / Sair** – Tela final após a partida, permitindo reiniciar ou encerrar o jogo.
+
+---
+
 ## Screenshots
 
 Alguns exemplos de telas do jogo:
@@ -45,10 +58,7 @@ Alguns exemplos de telas do jogo:
 <img width="600" alt="Tela 5" src="https://github.com/user-attachments/assets/f2dbf3bb-9d13-4068-a8a3-b0ef68a4d42a" />
 
 ## Vídeo Demonstrativo
-
-Assista a execução completa do jogo no YouTube:
-
-[Jangadeiro: Dragão do Mar](https://youtu.be/tAzGCbpE4CU)
+📹 [Jangadeiro: Dragão do Mar](https://youtu.be/tAzGCbpE4CU)
 
 ---
 
@@ -165,63 +175,63 @@ grip docs/documentacao.md
 ```bash
 project-name/
 │
-├── README.md
-├── requirements.txt
-├── main.py
-├── testes.py
+├── README.md                  # Documentação geral do projeto, como instalar, rodar e fluxo do jogo
+├── requirements.txt           # Lista de dependências do projeto (ex.: pygame)
+├── main.py                    # Script principal que inicializa o jogo e gerencia a troca de telas
+├── testes.py                  # Arquivo para testes manuais ou automatizados de funções da engine
 │
-├── engine/
-│   ├── __init__.py
+├── engine/                    # Engine gráfica customizada (base do jogo)
+│   ├── __init__.py            # Marca o diretório como pacote Python
 │   │
-│   ├── framebuffer.py      # set_pixel, clear, clear_color, getPixel
+│   ├── framebuffer.py         # Funções: set_pixel, limpar tela, pegar pixel
 │   │
-│   ├── collision.py      # check_collision_raft_obstacle, check_collision_raft_fish
+│   ├── collision.py           # Funções de detecção de colisão (jangada x obstáculos/peixes)
 │   │
-│   ├── raster/
-│   │   ├── line.py         # Bresenham / DDA
-│   │   ├── circle.py       # Midpoint Circle
-│   │   └── ellipse.py      # Midpoint Ellipse
+│   ├── raster/                # Algoritmos de rasterização de primitivas
+│   │   ├── line.py            # Desenho de linhas (Bresenham e DDA)
+│   │   ├── circle.py          # Desenho de círculos (Midpoint Circle)
+│   │   └── ellipse.py         # Desenho de elipses (Midpoint Ellipse)
 │   │
-│   ├── fill/
-│   │   ├── flood_fill.py
-│   │   └── scanline.py
+│   ├── fill/                  # Algoritmos de preenchimento
+│   │   ├── flood_fill.py      # Flood Fill iterativo/recursivo
+│   │   └── scanline.py        # Preenchimento de polígonos via Scanline
 │   │
-│   ├── geometry/
-│   │   ├── transform.py    # matrizes 3x3
-│   │   └── cohen_sutherland.py     # Cohen-Sutherland
+│   ├── geometry/              # Transformações geométricas e clipping
+│   │   ├── transform.py       # Matrizes 3x3 para translação, escala e rotação
+│   │   └── cohen_sutherland.py # Algoritmo de recorte de linhas (clipping)
 │   │
 │   └── math/
-│       └── auxiliary.py       # operações auxiliares
+│       └── auxiliary.py       # Funções auxiliares de matemática (trigonometria, vetores, etc.)
 │
-├── app/                    # JOGO / SIMULAÇÃO
+├── app/                       # Código do jogo/simulação em si
 │   │
-│   ├── scenes/
-│   │   ├── menu.py
-│   │   ├── auxiliary_functions.py
-│   │   ├── game_over.py
-│   │   ├── history.py
-│   │   ├── instructions.py
-│   │   ├── victory.py
-│   │   ├── intro.py        # tela de abertura
-│   │   └── gameplay.py
+│   ├── scenes/                # Telas e cenas do jogo
+│   │   ├── menu.py            # Menu principal interativo
+│   │   ├── auxiliary_functions.py # Funções utilitárias para desenhar textos, botões, etc.
+│   │   ├── game_over.py       # Tela de fim de jogo
+│   │   ├── history.py         # Tela de história/introdução do jogo
+│   │   ├── instructions.py    # Tela de instruções e controles
+│   │   ├── victory.py         # Tela de vitória
+│   │   ├── intro.py           # Tela de abertura animada
+│   │   └── gameplay.py        # Tela principal do jogo com lógica de movimentação, peixes e obstáculos
 │   │
-│   ├── entities/
-│   │   ├── fish.py
-│   │   ├── icons.py
-│   │   ├── minimap.py
-│   │   ├── raft.py
-│   │   └── obstacle.py
+│   ├── entities/              # Entidades do jogo
+│   │   ├── fish.py            # Desenho e comportamento dos peixes
+│   │   ├── icons.py           # Ícones gráficos (ex.: vidas, coração)
+│   │   ├── minimap.py         # Mini mapa com escala e viewport
+│   │   ├── raft.py            # Desenho e movimentação da jangada
+│   │   └── obstacle.py        # Desenho e posição dos obstáculos
 │   │
-│   └── constants.py
+│   └── constants.py           # Constantes do jogo (cores, dimensões, velocidades)
 │
-├── assets/
-│   ├── colors.py
-│   ├── music_manager.py
-│   ├── textures/
-│   └── music/
+├── assets/                    # Recursos do jogo
+│   ├── colors.py              # Paleta de cores utilizada no jogo
+│   ├── music_manager.py       # Controle de música e efeitos sonoros
+│   ├── textures/              # Texturas e imagens (se necessário para mapeamento manual)
+│   └── music/                 # Arquivos de música e efeitos sonoros
 │
-└── docs/
-    └── documentacao.md
+└── docs/                      # Documentação técnica
+    └── documentacao.md        # Explicação de implementação da engine, telas, fluxos e algoritmos
 ```
 
 ---
@@ -242,6 +252,18 @@ A documentação completa do projeto está disponível em:
 
 - **[docs/documentacao.md](docs/documentacao.md)** – Documentação técnica da engine e sistema de telas
 - **[docs/implementacao_tela_inicial.md](docs/implementacao_tela_inicial.md)** – Detalhes da implementação das telas
+
+---
+
+## Integrantes
+
+Equipe responsável pelo desenvolvimento do projeto:
+
+| Nome Completo              | GitHub                                     |
+|----------------------------|-------------------------------------------|
+| Layza Carneiro             | [https://github.com/LayzaCarneiro](https://github.com/LayzaCarneiro) |
+| Samuel William             | [https://github.com/William-SWS](https://github.com/William-SWS)       |
+| Samuel Valente             | [https://github.com/ValenteBy](https://github.com/ValenteBy) |
 
 ---
 
