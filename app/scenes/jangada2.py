@@ -18,6 +18,7 @@ from engine.collision import check_collision_raft_obstacle
 from app.scenes.game_over import run_game_over
 from app.scenes.victory import run_victory
 from engine.geometry.cohen_sutherland import draw_line
+from assets.music_manager import music_manager
 
 def _set_pixel_scaled(superficie, base_x, base_y, local_x, local_y, cor, scale):
     """
@@ -456,6 +457,9 @@ def main():
     # ===== JANELA (MUNDO) =====
     WORLD_WIDTH = 3000
     WORLD_HEIGHT = 3000
+
+    # Inicia música do gameplay
+    music_manager.play("gameplay")
 
     while True:
         # ===== POSIÇÕES NO MUNDO (reset a cada "jogar novamente") =====

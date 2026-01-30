@@ -9,6 +9,7 @@ import assets.colors as color
 from engine.raster.circle import draw_circle
 from app.scenes.auxiliary_functions import draw_text, draw_button, ponto_em_retangulo
 from app.scenes.instructions import run_instructions
+from assets.music_manager import music_manager
 
 def draw_title_scene(surf, w, h):
     """
@@ -53,6 +54,9 @@ def run_menu(superficie):
     by_iniciar = int(h * 0.45)
     by_instrucoes = by_iniciar + 70
     by_sair = by_instrucoes + 70
+
+    # Garante que a música do menu está tocando
+    music_manager.play("menu")
 
     while True:
         # Fundo (usa fill para performance; os elementos são desenhados com set_pixel)

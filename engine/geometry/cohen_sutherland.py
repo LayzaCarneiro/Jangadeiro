@@ -103,7 +103,7 @@ def draw_line(superficie, x0, y0, x1, y1, color, viewport=None):
 
         x0, y0, x1, y1 = cx0, cy0, cx1, cy1
 
-    bresenham(x0, y0, x1, y1, color)
+    bresenham(superficie, x0, y0, x1, y1, color)
 
 
 def draw_line_clipped(tela, x0, y0, x1, y1, cor, viewport):

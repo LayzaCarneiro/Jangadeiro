@@ -19,6 +19,7 @@ from engine.fill.flood_fill import flood_fill_iterativo
 from engine.fill.scanline import scanline_fill
 from engine.geometry.cohen_sutherland import draw_line_clipped
 from app.scenes.menu import run_menu
+from assets.music_manager import music_manager
  
 
 # ======================================
@@ -201,7 +202,8 @@ def run_intro(tela):
     # centro da “janela do mundo”
     cx = largura // 2 - 200
     cy = altura // 2 + 60
-
+    # Inicia música da introdução/menu
+    music_manager.play("menu")
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
