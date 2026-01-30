@@ -1,4 +1,4 @@
-# Documentação Técnica Detalhada — Jangada das Estrelas
+# Documentação Técnica Detalhada — Jangadeiro: Dragão do Mar
 
 Documentação focada no código: parâmetros, retornos e comportamento dos métodos da engine, dos renderizadores baseados em `set_pixel` e das transformações geométricas.
 
@@ -248,7 +248,7 @@ Este documento cobre parâmetros, retornos e papel de cada método da engine e d
 
 ## 8. Sistema de Telas e Navegação
 
-O jogo "Jangada das Estrelas" possui um sistema de telas interconectadas. Todas as telas utilizam renderização exclusiva via `set_pixel`, exceto o preenchimento de fundo (por performance).
+O jogo "Jangadeiro: Dragão do Mar" possui um sistema de telas interconectadas. Todas as telas utilizam renderização exclusiva via `set_pixel`, exceto o preenchimento de fundo (por performance).
 
 ### 8.1 Diagrama de Navegação
 

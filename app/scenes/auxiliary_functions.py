@@ -83,6 +83,38 @@ def _draw_char(surf, c, x, y, cor, scale=2):
                         set_pixel(surf, x + col * scale + dx, y + row * scale + dy, cor)
 
 
+
+def draw_simple_text(superficie, texto, x, y, cor, scale=1):
+    """
+    Desenha texto simples usando apenas set_pixel.
+    scale: 1 = normal; 2 = cada pixel vira bloco 2×2.
+    """
+    chars = {
+        '0': ['XXX', 'X X', 'X X', 'X X', 'XXX'],
+        '1': [' X ', 'XX ', ' X ', ' X ', 'XXX'],
+        '2': ['XXX', '  X', 'XXX', 'X  ', 'XXX'],
+        '3': ['XXX', '  X', 'XXX', '  X', 'XXX'],
+        '4': ['X X', 'X X', 'XXX', '  X', '  X'],
+        '5': ['XXX', 'X  ', 'XXX', '  X', 'XXX'],
+        '6': ['XXX', 'X  ', 'XXX', 'X X', 'XXX'],
+        '7': ['XXX', '  X', '  X', '  X', '  X'],
+        '8': ['XXX', 'X X', 'XXX', 'X X', 'XXX'],
+        '9': ['XXX', 'X X', 'XXX', '  X', 'XXX'],
+        'P': ['XXX', 'X X', 'XXX', 'X  ', 'X  '],
+        ':': ['   ', ' X ', '   ', ' X ', '   '],
+    }
+    
+    dx = 0
+    for c in texto:
+        if c in chars:
+            pattern = chars[c]
+            for row, line in enumerate(pattern):
+                for col, pixel in enumerate(line):
+                    if pixel == 'X':
+                        _set_pixel_scaled(superficie, x, y, dx + col, row, cor, scale)
+        dx += 4 * scale  # Espaço entre caracteres
+
+
 def draw_text(surf, texto, x, y, cor, scale=2):
     """
     Desenha texto com a fonte 5x7 via set_pixel.
@@ -130,3 +162,21 @@ def ponto_em_retangulo(px, py, rx, ry, rw, rh):
         bool: True se o ponto estiver dentro, False caso contrário.
     """
     return rx <= px <= rx + rw and ry <= py <= ry + rh
+
+
+def _set_pixel_scaled(superficie, base_x, base_y, local_x, local_y, cor, scale):
+    """
+    Desenha um "pixel lógico" como bloco scale×scale usando só set_pixel.
+    base_x, base_y = canto superior esquerdo do elemento; local_x, local_y = offset.
+    """
+    if scale <= 1:
+        set_pixel(superficie, base_x + local_x, base_y + local_y, cor)
+        return
+    for sy in range(scale):
+        for sx in range(scale):
+            set_pixel(
+                superficie,
+                base_x + local_x * scale + sx,
+                base_y + local_y * scale + sy,
+                cor,
+            )
