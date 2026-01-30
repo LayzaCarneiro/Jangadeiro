@@ -15,7 +15,7 @@ from engine.fill.scanline import scanline_fill, scanline_fill_gradiente
 from engine.math.auxiliary import interpolar_cor
 from engine.geometry.transform import rotacionar_pontos_em_torno_de
 from engine.collision import check_collision_raft_obstacle
-
+from engine.geometry.cohen_sutherland import draw_line
 
 def _set_pixel_scaled(superficie, base_x, base_y, local_x, local_y, cor, scale):
     """
@@ -41,8 +41,7 @@ RAFT_ALTURA = 85  # altura_proa (15) + comprimento (70)
 ALTURA_PROA = 15
 COMPRIMENTO = 70
 
-
-def draw_raft(superficie, x, y, angle=0):
+def draw_raft(superficie, x, y, angle=0, viewport):
     """
     Desenha uma jangada estilizada com gradiente marrom.
     angle: rotação em radianos em torno do centro da jangada (0 = sem rotação).
@@ -104,6 +103,38 @@ def draw_raft(superficie, x, y, angle=0):
         color.WOOD_DARK,
         color.WOOD_LIGHT,
         direcao="vertical",
+    )
+    
+    # Contorno da proa
+    desenhar_poligono(superficie, proa_pontos, color.DETAIL_COLOR)
+    
+    # Detalhes: linhas horizontais (tábuas)
+    for i in range(3):
+        y_tabua = y + altura_proa + 15 + i * 18
+        draw_line(
+            superficie,
+            x + 5, y_tabua,
+            x + largura_base - 5, y_tabua,
+            color.DETAIL_COLOR,
+            viewport=viewport
+        )
+    
+    # Detalhe central (mastro ou estrutura)
+    centro_x = x + largura_base // 2
+    centro_y = y + altura_proa + comprimento // 2
+    draw_line(
+        superficie,
+        centro_x - 3, centro_y - 5,
+        centro_x + 3, centro_y - 5,
+        color.DETAIL_COLOR,
+        viewport=viewport
+    )
+    draw_line(
+        superficie,
+        centro_x, centro_y - 5,
+        centro_x, centro_y + 5,
+        color.DETAIL_COLOR,
+        viewport=viewport
     )
     desenhar_poligono(superficie, proa_pontos, color.DETAIL_COLOR)
 
@@ -345,6 +376,7 @@ def draw_obstacle(superficie, x, y, tamanho=14):
 # Raio do obstáculo (pedra) para colisão (usado com engine.collision)
 OBSTACLE_RADIUS = 14
 
+
 def draw_minimap(
     superficie,
     raft_x, raft_y,
@@ -407,6 +439,7 @@ def draw_minimap(
                 MAP_Y + ry + dy,
                 (255, 255, 255)
             )
+
 
 def main():
     pygame.init()
@@ -491,6 +524,8 @@ def main():
         camera_x = max(0, min(WORLD_WIDTH - WIDTH, camera_x))
         camera_y = max(0, min(WORLD_HEIGHT - HEIGHT, camera_y))
 
+        viewport = (camera_x, camera_y, WIDTH, HEIGHT)
+
         # ===== ANIMAÇÃO DO PEIXE =====
         fish_animation_offset += fish_animation_speed
         fish_y = fish_y_base + math.sin(fish_animation_offset) * fish_animation_range
@@ -560,7 +595,8 @@ def main():
             screen,
             raft_x - camera_x,
             raft_y - camera_y,
-            angle=raft_angle
+            angle=raft_angle,
+            viewport
         )
 
         draw_minimap(
