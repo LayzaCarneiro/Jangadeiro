@@ -1,12 +1,26 @@
 from engine.raster.line import bresenham
 
-INSIDE = 0
-LEFT   = 1
-RIGHT  = 2
-BOTTOM = 4
-TOP    = 8
+# ============================
+# Códigos de região para Cohen-Sutherland
+# ============================
+INSIDE = 0   # Dentro da área de recorte
+LEFT   = 1   # Fora à esquerda
+RIGHT  = 2   # Fora à direita
+BOTTOM = 4   # Fora abaixo
+TOP    = 8   # Fora acima
 
 def codigo_regiao(x, y, xmin, ymin, xmax, ymax):
+    """
+    Calcula o código de região de um ponto para o algoritmo
+    de recorte de linha Cohen-Sutherland.
+
+    Args:
+        x, y: coordenadas do ponto
+        xmin, ymin, xmax, ymax: limites do retângulo de recorte
+
+    Returns:
+        int: código de região (bitmask)
+    """
     code = INSIDE
     if x < xmin: code |= LEFT
     elif x > xmax: code |= RIGHT
@@ -15,6 +29,18 @@ def codigo_regiao(x, y, xmin, ymin, xmax, ymax):
     return code
 
 def cohen_sutherland(x0, y0, x1, y1, xmin, ymin, xmax, ymax):
+    """
+    Aplica o algoritmo de recorte Cohen-Sutherland a uma linha.
+    
+    Args:
+        x0, y0, x1, y1: coordenadas da linha
+        xmin, ymin, xmax, ymax: retângulo de recorte
+
+    Returns:
+        tuple:
+            - bool: True se a linha (ou parte dela) é visível
+            - x0, y0, x1, y1: coordenadas da linha recortada (ou None se fora)
+    """
     c0 = codigo_regiao(x0, y0, xmin, ymin, xmax, ymax)
     c1 = codigo_regiao(x1, y1, xmin, ymin, xmax, ymax)
 
@@ -53,6 +79,13 @@ def draw_line(superficie, x0, y0, x1, y1, color, viewport=None):
     Desenha uma linha usando Bresenham.
     Se 'viewport' for fornecido, aplica clipping Cohen-Sutherland.
     Se não, desenha direto.
+
+    Args:
+        superficie: pygame.Surface onde desenhar
+        x0, y0, x1, y1: coordenadas da linha
+        color: cor da linha
+        viewport: tupla (xmin, ymin, largura, altura). Se fornecido,
+                  aplica recorte Cohen-Sutherland.
     """
     if viewport:
         xmin, ymin, w, h = viewport
@@ -74,6 +107,15 @@ def draw_line(superficie, x0, y0, x1, y1, color, viewport=None):
 
 
 def draw_line_clipped(tela, x0, y0, x1, y1, cor, viewport):
+    """
+    Wrapper para desenhar uma linha com clipping Cohen-Sutherland.
+    
+    Args:
+        tela: pygame.Surface onde desenhar
+        x0, y0, x1, y1: coordenadas da linha
+        cor: cor da linha
+        viewport: tupla (xmin, ymin, xmax, ymax) definindo o retângulo de recorte
+    """
     xmin, ymin, xmax, ymax = viewport
     visivel, cx0, cy0, cx1, cy1 = cohen_sutherland(x0, y0, x1, y1, xmin, ymin, xmax, ymax)
     if not visivel:

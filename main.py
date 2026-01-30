@@ -5,6 +5,23 @@ import app.scenes.jangada2 as jangada2
 
 
 def main():
+    """
+    Ponto de entrada principal do jogo "Jangada das Estrelas".
+
+    Fluxo:
+        1. Inicializa o pygame.
+        2. Cria a janela do jogo com tamanho fixo (1000x800).
+        3. Executa a cena de introdução (run_intro).
+        4. Dependendo do resultado da introdução:
+            - "sair": encerra o jogo.
+            - "iniciar": fecha a janela atual e chama a função principal de `jangada2`.
+        5. Fecha o pygame e encerra o programa em qualquer outro caso.
+
+    Observações:
+        - A função run_intro retorna uma string que indica a ação seguinte.
+        - `jangada2.main()` deve conter o loop principal do jogo em si.
+    """
+        
     pygame.init()
     largura, altura = 1000, 800
     tela = pygame.display.set_mode((largura, altura))

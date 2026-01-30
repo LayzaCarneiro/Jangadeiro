@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+Scanline Fill para polígonos, com opção de gradiente linear.
+Usa set_pixel do engine para renderização pixel a pixel.
+
+Funções:
+- scanline_fill: preenche um polígono com cor sólida.
+- scanline_fill_gradiente: preenche um polígono com gradiente linear (vertical ou horizontal).
+"""
+
 from engine.framebuffer import set_pixel
 from engine.math.auxiliary import interpolar_cor
 
@@ -5,6 +15,14 @@ from engine.math.auxiliary import interpolar_cor
 # Scanline Fill
 # =========================
 def scanline_fill(superficie, pontos, cor_preenchimento):
+    """
+    Preenche um polígono definido por 'pontos' com cor sólida usando o algoritmo scanline.
+
+    Args:
+        superficie (pygame.Surface): Superfície onde desenhar.
+        pontos (list of tuple): Lista de vértices do polígono [(x0,y0), (x1,y1), ...].
+        cor_preenchimento (tuple): Cor RGB usada para preencher o polígono.
+    """
     # Encontra Y mínimo e máximo
     ys = [p[1] for p in pontos]
     y_min = min(ys)
@@ -48,10 +66,19 @@ def scanline_fill(superficie, pontos, cor_preenchimento):
                     set_pixel(superficie, x, y, cor_preenchimento)
 
 
+# =========================
+# Scanline Fill com Gradiente
+# =========================
 def scanline_fill_gradiente(superficie, pontos, cor_inicio, cor_fim, direcao='vertical'):
     """
-    Preenche polígono com gradiente linear.
-    direcao: 'vertical' (de cima para baixo) ou 'horizontal' (esquerda para direita)
+    Preenche um polígono com gradiente linear.
+
+    Args:
+        superficie (pygame.Surface): Superfície onde desenhar.
+        pontos (list of tuple): Lista de vértices do polígono [(x0,y0), (x1,y1), ...].
+        cor_inicio (tuple): Cor RGB no início do gradiente.
+        cor_fim (tuple): Cor RGB no fim do gradiente.
+        direcao (str): 'vertical' ou 'horizontal' definindo direção do gradiente.
     """
     ys = [p[1] for p in pontos]
     xs = [p[0] for p in pontos]
