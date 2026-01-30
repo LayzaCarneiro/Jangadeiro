@@ -31,6 +31,7 @@ def draw_title_scene(surf, w, h):
 # ======================================
 def run_menu(superficie):
     """
+    Roda a tela inicial. Retorna 'iniciar' ou 'sair'.
     Toda a renderização usa apenas set_pixel (através dos algoritmos do engine).
 
     Executa a tela inicial do jogo com botões:
