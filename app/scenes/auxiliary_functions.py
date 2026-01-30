@@ -1,9 +1,19 @@
+"""
+Fonte e Utilirários de UI
+
+- Fonte 5x7 baseada em pixels (`set_pixel`) para desenhar letras, números e símbolos.
+- Funções auxiliares para botões e detecção de clique em retângulos.
+"""
+
 from engine.framebuffer import set_pixel
 from engine.fill.scanline import scanline_fill
 from engine.raster.line import desenhar_poligono
 
-# Fonte 5x7 (apenas set_pixel) – caracteres usados: A C D E G I J L N R S T V (espaço)
-# Cada letra: 7 linhas de 5 caracteres; 'X' = pixel ligado
+# ======================================
+# 5x7 PIXEL FONT
+# ======================================
+# Cada letra: 7 linhas de 5 pixels ('X' = pixel ligado, ' ' = desligado)
+# Caracteres suportados: letras A-Z, números 0-9, sinais básicos (:-.)
 _FONT = {
     " ": ["     ", "     ", "     ", "     ", "     ", "     ", "     "],
     "A": ["  X  ", " X X ", "X   X", "XXXXX", "X   X", "X   X", "X   X"],
@@ -53,6 +63,16 @@ _FONT = {
 
 
 def _draw_char(surf, c, x, y, cor, scale=2):
+    """
+    Desenha um único caractere usando a fonte 5x7.
+
+    Args:
+        surf: pygame.Surface onde desenhar.
+        c (str): Caractere a desenhar.
+        x, y (int): Posição superior esquerda.
+        cor (tuple): Cor RGB do pixel.
+        scale (int): Fator de escala.
+    """
     c = c.upper()
     rows = _FONT.get(c, _FONT[" "])
     for row, s in enumerate(rows):
@@ -64,7 +84,9 @@ def _draw_char(surf, c, x, y, cor, scale=2):
 
 
 def draw_text(surf, texto, x, y, cor, scale=2):
-    """Desenha texto com a fonte 5x7 via set_pixel."""
+    """
+    Desenha texto com a fonte 5x7 via set_pixel.
+    """
     dx = 0
     for c in texto:
         if c.upper() in _FONT:
@@ -73,7 +95,18 @@ def draw_text(surf, texto, x, y, cor, scale=2):
 
 
 def draw_button(surf, x, y, larg, alt, texto, cor_fundo, cor_borda, cor_texto):
-    """Botão: polígono preenchido com scanline + borda com bresenham + texto."""
+    """
+    Botão: polígono preenchido com scanline + borda com bresenham + texto.
+
+    Args:
+    surf: pygame.Surface onde desenhar.
+    x, y (int): Posição do canto superior esquerdo.
+    larg, alt (int): Largura e altura do botão.
+    texto (str): Texto do botão.
+    cor_fundo (tuple): Cor de preenchimento do botão.
+    cor_borda (tuple): Cor da borda do botão.
+    cor_texto (tuple): Cor do texto.
+    """
     pts = [(x, y), (x + larg, y), (x + larg, y + alt), (x, y + alt)]
     scanline_fill(surf, pts, cor_fundo)
     desenhar_poligono(surf, pts, cor_borda)
@@ -85,4 +118,15 @@ def draw_button(surf, x, y, larg, alt, texto, cor_fundo, cor_borda, cor_texto):
 
 
 def ponto_em_retangulo(px, py, rx, ry, rw, rh):
+    """
+    Verifica se um ponto está dentro de um retângulo.
+
+    Args:
+        px, py (int): Coordenadas do ponto.
+        rx, ry (int): Canto superior esquerdo do retângulo.
+        rw, rh (int): Largura e altura do retângulo.
+
+    Returns:
+        bool: True se o ponto estiver dentro, False caso contrário.
+    """
     return rx <= px <= rx + rw and ry <= py <= ry + rh
