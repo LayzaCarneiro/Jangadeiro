@@ -56,6 +56,22 @@ def aplica_transformacao(m, pontos):
         novos.append((round(x_novo), round(y_novo)))
     return novos
 
+
+# =====================================================
+# ROTAÇÃO EM TORNO DE UM PONTO (PIVÔ)
+# =====================================================
+def rotacionar_pontos_em_torno_de(pontos, cx, cy, theta):
+    """
+    Rotaciona uma lista de pontos (x, y) em theta radianos
+    em torno do ponto (cx, cy). 
+    Retorna nova lista de pontos (inteiros).
+    """
+    t_neg = translacao(-cx, -cy)
+    r = rotacao(theta)
+    t_pos = translacao(cx, cy)
+    m = multiplica_matrizes(t_pos, multiplica_matrizes(r, t_neg))
+    return aplica_transformacao(m, pontos)
+
 # =====================================================
 # Polígono em coordenadas absolutas
 # =====================================================
