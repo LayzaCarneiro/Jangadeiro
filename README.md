@@ -38,21 +38,17 @@ O jogo simula a vida dos **jangadeiros do Ceará**, com elementos históricos e 
 
 Alguns exemplos de telas do jogo:
 
-| Tela             | Screenshot                                 |
-| ---------------- | ------------------------------------------ |
-| História.        | ![historia](<Captura de Tela 2026-01-30 às 05.57.07.png>)     |
-| Tela de abertura | ![intro](<Captura de Tela 2026-01-30 às 05.57.13.png>)    |
-| Gameplay         | ![gameplay](<Captura de Tela 2026-01-30 às 05.58.04.png>) |
-| Menu interativo  | ![menu](<Captura de Tela 2026-01-30 às 05.57.22.png>)         |
-| Instruções       | ![instrucao](<Captura de Tela 2026-01-30 às 05.57.43.png>)         |
-
----
+<img width="600" alt="Tela 1" src="https://github.com/user-attachments/assets/37bdb0bf-6d2b-4b4f-a523-83dc90df7d24" />
+<img width="600" alt="Tela 2" src="https://github.com/user-attachments/assets/a59c54f0-3095-4144-8926-7eded7ac0cda" />
+<img width="600" alt="Tela 3" src="https://github.com/user-attachments/assets/077da983-45d7-41a1-9fa8-105e2bdd4cde" />
+<img width="600" alt="Tela 4" src="https://github.com/user-attachments/assets/68ab5fcf-947b-4289-a43b-26783f7d0769" />
+<img width="600" alt="Tela 5" src="https://github.com/user-attachments/assets/f2dbf3bb-9d13-4068-a8a3-b0ef68a4d42a" />
 
 ## Vídeo Demonstrativo
 
 Assista a execução completa do jogo no YouTube:
 
-[![Jangadeiro: Dragão do Mar](<Captura de Tela 2026-01-30 às 05.58.04.png>)](https://youtu.be/tAzGCbpE4CU)
+[Jangadeiro: Dragão do Mar](https://youtu.be/tAzGCbpE4CU)
 
 ---
 
